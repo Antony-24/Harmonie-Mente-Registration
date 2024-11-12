@@ -99,7 +99,7 @@ const RegistrationForm = () => {
             <React.Fragment key={index}>
               <div className="items-center space-x-2 my-2">
                 <button
-                  className={`px-4 py-1 text-[12px] font-medium rounded-full ${activeSection === index ? 'bg-blue-500 text-white' : isSectionCompleted(index) ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+                  className={`px-4 py-1 text-[12px] font-medium rounded-full ${activeSection === index ? 'bg-[#512cad] text-white' : isSectionCompleted(index) ? 'bg-[#c09a51] text-white' : 'bg-gray-200 text-gray-800'}`}
                   onClick={() => setActiveSection(index)}
                 >
                   {isSectionCompleted(index) ? '✔' : ''} {section.title}
@@ -116,7 +116,7 @@ const RegistrationForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-left text-sm font-normal">Harmonie Mente Workshop Registration</h1>
+      <h1 className="text-[20px] my-6 font-normal tracking-wide text-center text-[#c09a51]">Harmonie Mente Workshop Registration</h1>
 
       {/* Section Navigation with Lines */}
       {renderNavigation()}
@@ -129,7 +129,7 @@ const RegistrationForm = () => {
         <div className="flex justify-between mt-6">
           {activeSection > 0 && (
             <button
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md"
+              className="px-4 py-2 bg-[#512cad] text-white rounded-md"
               onClick={handlePreviousSection}
               disabled={activeSection === 0}
             >
@@ -138,7 +138,7 @@ const RegistrationForm = () => {
           )}
           {activeSection < sections.length - 1 ? (
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-md"
+              className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
               onClick={handleNextSection}
               disabled={activeSection === sections.length - 1}
             >
@@ -146,7 +146,7 @@ const RegistrationForm = () => {
             </button>
           ) : (
             <button
-              className="px-4 py-2 bg-green-500 text-white rounded-md"
+              className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
               onClick={() => console.log(formData,'Form Data')}  // Replace with your form submission logic
               disabled={!isFormComplete()}
             >
@@ -161,15 +161,15 @@ const RegistrationForm = () => {
 
 // Personal Information Section
 const PersonalInformation = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
+  <div className="space-y-4 flex flex-wrap items-end gap-2">
     {['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'zip'].map((field) => (
       <div key={field}>
-        <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
+        <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field}</label>
         <input
           type={field === 'dob' ? 'date' : field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          className="mt-1 block w-full p-2 border focus:outline-none border-[#c09a51] rounded-md text-[12px]"
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
@@ -180,15 +180,15 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
 
 // Workshop Details Section
 const WorkshopDetails = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
+  <div className="space-y-4 flex flex-wrap gap-2 items-end">
     {['workshopTitle', 'workshopDate', 'workshopTime', 'location'].map((field) => (
       <div key={field}>
-        <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
+        <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field}</label>
         <input
           type={field === 'workshopDate' ? 'date' : field === 'workshopTime' ? 'time' : 'text'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          className="mt-1 block w-full p-2 border focus:outline-none border-[#c09a51] rounded-md text-[12px]"
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
@@ -199,15 +199,15 @@ const WorkshopDetails = ({ formData, errors, onChange }) => (
 
 // Emergency Contact Section
 const EmergencyContact = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
+  <div className="space-y-4 flex flex-wrap gap-2 items-end">
     {['emergencyName', 'emergencyRelationship', 'emergencyPhone'].map((field) => (
       <div key={field}>
-        <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
+        <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field}</label>
         <input
           type="text"
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          className="mt-1 block w-full p-2 border focus:outline-none border-[#c09a51] rounded-md text-[12px]"
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
@@ -220,11 +220,11 @@ const EmergencyContact = ({ formData, errors, onChange }) => (
 const WorkshopPreferences = ({ formData, errors, onChange }) => (
   <div className="space-y-4">
     <div>
-      <label className="block text-sm font-medium text-gray-700">Do you have any specific goals for the workshop?</label>
+      <label className="block text-[12px] font-medium text-[#512cad]">Do you have any specific goals for the workshop?</label>
       <textarea
         value={formData['goals']}
         onChange={(e) => onChange('goals', e.target.value)}
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+        className="mt-1 block w-full p-2 focus:outline-none border-[#c09a51] border rounded-md text-[12px]"
         rows="4"
         required
       />
@@ -232,7 +232,7 @@ const WorkshopPreferences = ({ formData, errors, onChange }) => (
     </div>
 
     <div>
-      <label className="block text-sm font-medium text-gray-700">Have you attended any previous Harmonie Mente workshops?</label>
+      <label className="block text-[12px] font-medium text-[#512cad]">Have you attended any previous Harmonie Mente workshops?</label>
       <div className="flex items-center space-x-4">
         <input
           type="radio"
@@ -240,20 +240,20 @@ const WorkshopPreferences = ({ formData, errors, onChange }) => (
           value="yes"
           checked={formData['previousWorkshops'] === 'yes'}
           onChange={(e) => onChange('previousWorkshops', e.target.value)}
-        /> <span>Yes</span>
+        /> <span className='text-[12px] text-[#c09a51]'>Yes</span>
         <input
           type="radio"
           name="previousWorkshops"
           value="no"
           checked={formData['previousWorkshops'] === 'no'}
           onChange={(e) => onChange('previousWorkshops', e.target.value)}
-        /> <span>No</span>
+        /> <span className='text-[12px] text-[#c09a51]'>No</span>
         {errors['previousWorkshops'] && <p className="text-red-500 text-xs">{errors['previousWorkshops']}</p>}
       </div>
     </div>
 
     <div>
-      <label className="block text-sm font-medium text-gray-700">If yes, please specify the level:</label>
+      <label className="block text-[12px] font-medium text-[#512cad]">If yes, please specify the level:</label>
       <div className="flex items-center space-x-4">
         <input
           type="radio"
@@ -261,21 +261,21 @@ const WorkshopPreferences = ({ formData, errors, onChange }) => (
           value="Beginner"
           checked={formData['workshopLevel'] === 'Beginner'}
           onChange={(e) => onChange('workshopLevel', e.target.value)}
-        /> <span>Beginner</span>
+        /> <span className='text-[12px] text-[#c09a51]'>Beginner</span>
         <input
           type="radio"
           name="workshopLevel"
           value="Intermediate"
           checked={formData['workshopLevel'] === 'Intermediate'}
           onChange={(e) => onChange('workshopLevel', e.target.value)}
-        /> <span>Intermediate</span>
+        /> <span className='text-[12px] text-[#c09a51]'>Intermediate</span>
         <input
           type="radio"
           name="workshopLevel"
           value="Advanced"
           checked={formData['workshopLevel'] === 'Advanced'}
           onChange={(e) => onChange('workshopLevel', e.target.value)}
-        /> <span>Advanced</span>
+        /> <span className='text-[12px] text-[#c09a51]'>Advanced</span>
         {errors['workshopLevel'] && <p className="text-red-500 text-xs">{errors['workshopLevel']}</p>}
       </div>
     </div>
@@ -286,12 +286,12 @@ const WorkshopPreferences = ({ formData, errors, onChange }) => (
 const WaiverAndConsent = ({ formData, errors, onChange }) => (
   <div className="space-y-4">
     <div>
-      <label className="block text-sm font-medium text-gray-700">I agree to the waiver and terms</label>
+      <label className="block text-[12px] font-medium text-[#512cad]">I agree to the waiver and terms</label>
       <input
         type="checkbox"
         checked={formData['waiverAgreement']}
         onChange={(e) => onChange('waiverAgreement', e.target.checked)}
-        className="mt-1"
+        className="mt-1 text-[12px]"
         required
       />
       {errors['waiverAgreement'] && <p className="text-red-500 text-xs">{errors['waiverAgreement']}</p>}
