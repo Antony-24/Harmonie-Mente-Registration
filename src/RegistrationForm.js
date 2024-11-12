@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
+import Header from './Header';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import Loader from './Loader';
+
+
 
 const RegistrationForm = () => {
   const [activeSection, setActiveSection] = useState(0);
+  const [loader,setLoader] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     dob: '',
@@ -25,6 +32,7 @@ const RegistrationForm = () => {
     waiverAgreement: false,
   });
 
+
   const [errors, setErrors] = useState({});
   const [completedSections, setCompletedSections] = useState([]);
 
@@ -46,6 +54,35 @@ const RegistrationForm = () => {
       }
     }
   };
+
+const handleSubmit = async ()=>{
+    setLoader(true)
+    const response = await axios.post(`https://admin.harmoniemente.com/api/public/contact-enquiry`,formData);
+    console.log(response);
+    if(response.status == 200){
+        setLoader(false);
+        Swal.fire({
+            title: 'Success!',
+            text: 'Your form has been submitted.',
+            icon: 'success',
+            confirmButtonText: 'Great'
+          }).then(() => {
+            // Navigate to another URL after SweetAlert is closed
+            window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=dDw79KM7'; // Change '/thank-you' to your desired URL
+        });
+          
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
   // Handle Previous Section
   const handlePreviousSection = () => {
@@ -86,6 +123,9 @@ const RegistrationForm = () => {
 
   // Render the required section dynamically
   const renderSection = () => {
+    if(loader){
+        return <Loader/>
+    }
     const SectionComponent = sections[activeSection].component;
     return <SectionComponent formData={formData} errors={errors} onChange={handleChange} />;
   };
@@ -93,6 +133,7 @@ const RegistrationForm = () => {
   // Render the section navigation with lines and tick marks
   const renderNavigation = () => {
     return (
+        
       <div className="space-y-4">
         <div className="flex flex-wrap  lg:flex-nowrap gap-2">
           {sections.map((section, index) => (
@@ -115,6 +156,7 @@ const RegistrationForm = () => {
   };
 
   return (
+    
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h1 className="text-[20px] my-6 font-normal tracking-wide text-center text-[#c09a51]">Harmonie Mente Workshop Registration</h1>
 
@@ -147,7 +189,7 @@ const RegistrationForm = () => {
           ) : (
             <button
               className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
-              onClick={() => console.log(formData,'Form Data')}  // Replace with your form submission logic
+              onClick={handleSubmit}  // Replace with your form submission logic
               disabled={!isFormComplete()}
             >
               Submit

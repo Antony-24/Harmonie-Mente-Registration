@@ -7,8 +7,8 @@ import SupportGroupRegistrationForm from './SupportGroupRegistrationForm';
 function App() {
   return (
     <div>
- <Header/>
- <div className='flex h-screen items-center justify-center'>
+ {/* <Header/> */}
+ <div className='flex h-screen'>
      <RegistrationForm />
      {/* <SupportGroupRegistrationForm/> */}
    </div>
