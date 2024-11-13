@@ -3,12 +3,11 @@ import Header from './Header';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import Loader from './Loader';
-
-
+import logo from './assets/logo-1.02d0c49c0ba7696311e1.png'
 
 const RegistrationForm = () => {
   const [activeSection, setActiveSection] = useState(0);
-  const [loader,setLoader] = useState(false);
+  const [loader, setLoader] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     dob: '',
@@ -32,7 +31,6 @@ const RegistrationForm = () => {
     waiverAgreement: false,
   });
 
-
   const [errors, setErrors] = useState({});
   const [completedSections, setCompletedSections] = useState([]);
 
@@ -55,34 +53,23 @@ const RegistrationForm = () => {
     }
   };
 
-const handleSubmit = async ()=>{
+  const handleSubmit = async () => {
     setLoader(true)
-    const response = await axios.post(`https://admin.harmoniemente.com/api/public/contact-enquiry`,formData);
+    const response = await axios.post(`https://admin.harmoniemente.com/api/public/contact-enquiry`, formData);
     console.log(response);
-    if(response.status == 200){
-        setLoader(false);
-        Swal.fire({
-            title: 'Success!',
-            text: 'Your form has been submitted.',
-            icon: 'success',
-            confirmButtonText: 'Great'
-          }).then(() => {
-            // Navigate to another URL after SweetAlert is closed
-            window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=dDw79KM7'; // Change '/thank-you' to your desired URL
-        });
-          
+    if (response.status == 200) {
+      setLoader(false);
+      Swal.fire({
+        title: 'Success!',
+        text: 'Your form has been submitted.',
+        icon: 'success',
+        confirmButtonText: 'Great'
+      }).then(() => {
+        // Navigate to another URL after SweetAlert is closed
+        window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=dDw79KM7'; // Change '/thank-you' to your desired URL
+      });
     }
-}
-
-
-
-
-
-
-
-
-
-
+  }
 
   // Handle Previous Section
   const handlePreviousSection = () => {
@@ -123,8 +110,8 @@ const handleSubmit = async ()=>{
 
   // Render the required section dynamically
   const renderSection = () => {
-    if(loader){
-        return <Loader/>
+    if (loader) {
+      return <Loader />
     }
     const SectionComponent = sections[activeSection].component;
     return <SectionComponent formData={formData} errors={errors} onChange={handleChange} />;
@@ -132,21 +119,22 @@ const handleSubmit = async ()=>{
 
   // Render the section navigation with lines and tick marks
   const renderNavigation = () => {
+    if (loader) {
+      return <Loader />
+    }
     return (
-        
       <div className="space-y-4">
         <div className="flex flex-wrap  lg:flex-nowrap gap-2">
           {sections.map((section, index) => (
             <React.Fragment key={index}>
               <div className="items-center space-x-2 my-2">
                 <button
+                  disabled
                   className={`px-4 py-1 text-[12px] font-medium rounded-full ${activeSection === index ? 'bg-[#512cad] text-white' : isSectionCompleted(index) ? 'bg-[#c09a51] text-white' : 'bg-gray-200 text-gray-800'}`}
-                  onClick={() => setActiveSection(index)}
                 >
                   {isSectionCompleted(index) ? '✔' : ''} {section.title}
                 </button>
                 {/* Line between sections */}
-               
               </div>
             </React.Fragment>
           ))}
@@ -156,8 +144,8 @@ const handleSubmit = async ()=>{
   };
 
   return (
-    
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+      <img src={logo} alt='logo' className='w-24 mx-auto' />
       <h1 className="text-[20px] my-6 font-normal tracking-wide text-center text-[#c09a51]">Harmonie Mente Workshop Registration</h1>
 
       {/* Section Navigation with Lines */}
@@ -211,7 +199,7 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
           type={field === 'dob' ? 'date' : field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-2 border focus:outline-none border-[#c09a51] rounded-md text-[12px]"
+          className={`mt-1 block w-full p-1 bg-gray-200 ${field == 'dob' && 'text-[10px] text-gray-400'} focus:outline-none rounded-md text-[12px]`}
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
@@ -230,7 +218,7 @@ const WorkshopDetails = ({ formData, errors, onChange }) => (
           type={field === 'workshopDate' ? 'date' : field === 'workshopTime' ? 'time' : 'text'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-2 border focus:outline-none border-[#c09a51] rounded-md text-[12px]"
+          className={`mt-1 block w-full p-1 bg-gray-200 ${field == 'workshopDate' && 'text-[10px] text-gray-400'} ${field == 'workshopTime' && 'text-[10px] text-gray-400'} focus:outline-none rounded-md text-[12px]`}
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
@@ -249,7 +237,7 @@ const EmergencyContact = ({ formData, errors, onChange }) => (
           type="text"
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-2 border focus:outline-none border-[#c09a51] rounded-md text-[12px]"
+          className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
@@ -266,7 +254,7 @@ const WorkshopPreferences = ({ formData, errors, onChange }) => (
       <textarea
         value={formData['goals']}
         onChange={(e) => onChange('goals', e.target.value)}
-        className="mt-1 block w-full p-2 focus:outline-none border-[#c09a51] border rounded-md text-[12px]"
+        className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
         rows="4"
         required
       />
