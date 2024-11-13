@@ -145,9 +145,9 @@ const RegistrationForm = () => {
 
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
-      <img src={logo} alt='logo' className='w-24 mx-auto' />
-      <h1 className="text-[20px] my-6 font-normal tracking-wide text-center text-[#c09a51]">Harmonie Mente Workshop Registration</h1>
-
+     
+    <p className='text-lg text-center text-[#512CAD] font-normal my-4'>Thank you for your interest in participating in the Harmonie Mente workshop! Please fill out the form below to complete your registration. We look forward to welcoming you.</p>
+   
       {/* Section Navigation with Lines */}
       {renderNavigation()}
 
@@ -183,7 +183,9 @@ const RegistrationForm = () => {
               Submit
             </button>
           )}
+        
         </div>
+        <p className='text-[12px] text-left text-[#512CAD] my-3'>Please submit your completed registration  If you have any questions, feel free to contact us at info@harmoniemente.com</p>
       </div>
     </div>
   );
