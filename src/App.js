@@ -8,7 +8,7 @@ function App() {
   return (
     <div>
  {/* <Header/> */}
- <div className='flex h-screen'>
+ <div className=''>
      <RegistrationForm />
      {/* <SupportGroupRegistrationForm/> */}
    </div>

@@ -127,10 +127,10 @@ const RegistrationForm = () => {
         <div className="flex flex-wrap  lg:flex-nowrap gap-2">
           {sections.map((section, index) => (
             <React.Fragment key={index}>
-              <div className="items-center space-x-2 my-2">
+              <div className="items-center space-x-2 w-full">
                 <button
                   disabled
-                  className={`px-4 py-1 text-[12px] font-medium rounded-full ${activeSection === index ? 'bg-[#512cad] text-white' : isSectionCompleted(index) ? 'bg-[#c09a51] text-white' : 'bg-gray-200 text-gray-800'}`}
+                  className={`px-2 py-1 w-full text-[12px] font-medium rounded-full ${activeSection === index ? 'bg-[#512cad] text-white' : isSectionCompleted(index) ? 'bg-[#c09a51] text-white' : 'bg-gray-200 text-gray-800'}`}
                 >
                   {isSectionCompleted(index) ? '✔' : ''} {section.title}
                 </button>
@@ -144,7 +144,7 @@ const RegistrationForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg">
+    <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
       <img src={logo} alt='logo' className='w-24 mx-auto' />
       <h1 className="text-[20px] my-6 font-normal tracking-wide text-center text-[#c09a51]">Harmonie Mente Workshop Registration</h1>
 
@@ -152,11 +152,11 @@ const RegistrationForm = () => {
       {renderNavigation()}
 
       {/* Active Section */}
-      <div className="mt-6">
+      <div className="">
         {renderSection()}
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between mt-3">
           {activeSection > 0 && (
             <button
               className="px-4 py-2 bg-[#512cad] text-white rounded-md"
@@ -191,7 +191,7 @@ const RegistrationForm = () => {
 
 // Personal Information Section
 const PersonalInformation = ({ formData, errors, onChange }) => (
-  <div className="space-y-4 flex flex-wrap items-end gap-2">
+  <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-end gap-1 md:gap-2 mt-5">
     {['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'zip'].map((field) => (
       <div key={field}>
         <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field}</label>
