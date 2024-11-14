@@ -4,10 +4,11 @@ import logo from './assets/white-logo.png';
 function Footer() {
   return (
     <footer className="bg-[#03347d] text-white py-8 px-4">
-      <div className="container mx-auto flex flex-col md:flex-row justify-between">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between max-w-[95%] md:max-w-[80%]">
         {/* Left Side: Logo and Slogan */}
         <div className="flex flex-col mb-6 md:mb-0">
           <div className=' p-2 w-24 rounded-sm mb-2'>
+            
             <img
               src={logo}
               alt="Logo"

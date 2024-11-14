@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import Header from './Header';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import Loader from './Loader';
-import logo from './assets/logo-1.02d0c49c0ba7696311e1.png'
 
 const RegistrationForm = () => {
   const [activeSection, setActiveSection] = useState(0);
@@ -18,9 +15,8 @@ const RegistrationForm = () => {
     city: '',
     state: '',
     zip: '',
-    workshopTitle: '',
-    workshopDate: '',
-    workshopTime: '',
+    country: '',
+    workshopTitle: 'Harmonie Mente', // Fixed title as per new data
     location: '',
     emergencyName: '',
     emergencyRelationship: '',
@@ -29,23 +25,30 @@ const RegistrationForm = () => {
     previousWorkshops: '',
     workshopLevel: '',
     waiverAgreement: false,
+    paymentDate: '',
+    workshopDate:'01-03-2024',
+    workshopTime:'undefined'
   });
 
   const [errors, setErrors] = useState({});
   const [completedSections, setCompletedSections] = useState([]);
 
   const sections = [
-    { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'zip'] },
-    { title: 'Workshop Details', component: WorkshopDetails, fields: ['workshopTitle', 'workshopDate', 'workshopTime', 'location'] },
-    { title: 'Emergency Contact', component: EmergencyContact, fields: ['emergencyName', 'emergencyRelationship', 'emergencyPhone'] },
+    { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'zip', 'country'] },
+    { title: 'Workshop Details', component: WorkshopDetails, fields: ['workshopTitle', 'location'] },
+    { title: 'Emergency Contact Name', component: EmergencyContact, fields: ['emergencyName', 'emergencyRelationship', 'emergencyPhone'] }, // updated fields here
     { title: 'Workshop Preferences', component: WorkshopPreferences, fields: ['goals', 'previousWorkshops', 'workshopLevel'] },
+    { title: 'Payment Information', component: PaymentInformation, fields: [''] },
     { title: 'Waiver and Consent', component: WaiverAndConsent, fields: ['waiverAgreement'] },
   ];
+  
+
+  // Define the function to check if the section is completed
+  const isSectionCompleted = (index) => completedSections.includes(index);
 
   // Handle Next Section
   const handleNextSection = () => {
     if (validateCurrentSection()) {
-      // Mark current section as completed
       setCompletedSections([...completedSections, activeSection]);
       if (activeSection < sections.length - 1) {
         setActiveSection(activeSection + 1);
@@ -54,22 +57,32 @@ const RegistrationForm = () => {
   };
 
   const handleSubmit = async () => {
-    setLoader(true)
-    const response = await axios.post(`https://admin.harmoniemente.com/api/public/contact-enquiry`, formData);
-    console.log(response);
-    if (response.status == 200) {
-      setLoader(false);
-      Swal.fire({
-        title: 'Success!',
-        text: 'Your form has been submitted.',
-        icon: 'success',
-        confirmButtonText: 'Great'
-      }).then(() => {
-        // Navigate to another URL after SweetAlert is closed
-        window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=dDw79KM7'; // Change '/thank-you' to your desired URL
-      });
+    try{
+        setLoader(true)
+        const response = await axios.post(`https://admin.harmoniemente.com/api/public/contact-enquiry`, formData);
+        console.log(response);
+        if (response.status == 200) {
+          setLoader(false);
+          Swal.fire({
+            title: 'Success!',
+            text: 'Your form has been submitted.',
+            icon: 'success',
+            confirmButtonText: 'Great'
+          }).then(() => {
+            window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=PXBlk-X5'; // Change '/thank-you' to your desired URL
+          });
+        }
+    }catch(error){
+        Swal.fire({
+            title: 'error',
+            text:error.response.data.message,
+            icon: 'fail',
+            confirmButtonText: 'close'
+          })
+          setLoader(false);
     }
-  }
+   
+  };
 
   // Handle Previous Section
   const handlePreviousSection = () => {
@@ -87,44 +100,47 @@ const RegistrationForm = () => {
   const validateCurrentSection = () => {
     const sectionFields = sections[activeSection].fields;
     let currentErrors = {};
+
     sectionFields.forEach((field) => {
+      if (field === 'workshopLevel' && formData.previousWorkshops !== 'Yes') return;
+
       if (formData[field] === '' || (Array.isArray(formData[field]) && formData[field].length === 0)) {
         currentErrors[field] = 'This field is required';
       }
     });
+
     setErrors(currentErrors);
     return Object.keys(currentErrors).length === 0; // Return true if no errors
   };
-
-  // Check if a section is completed
-  const isSectionCompleted = (index) => completedSections.includes(index);
 
   // Check if all required fields are filled to enable the Submit button
   const isFormComplete = () => {
     return sections.every((section) => {
       return section.fields.every((field) => {
-        return formData[field] !== '' && !(field === 'waiverAgreement' && !formData[field]);
+        if (field === 'waiverAgreement') {
+          return formData[field] === true;
+        }
+
+        if (field === 'workshopLevel' && formData.previousWorkshops !== 'Yes') {
+          return true;
+        }
+
+        return formData[field] !== ''; // Ensure all other fields are filled
       });
     });
   };
 
   // Render the required section dynamically
   const renderSection = () => {
-    if (loader) {
-      return <Loader />
-    }
     const SectionComponent = sections[activeSection].component;
     return <SectionComponent formData={formData} errors={errors} onChange={handleChange} />;
   };
 
-  // Render the section navigation with lines and tick marks
-  const renderNavigation = () => {
-    if (loader) {
-      return <Loader />
-    }
+ // Render the section navigation with lines and tick marks
+ const renderNavigation = () => {
     return (
       <div className="space-y-4">
-        <div className="flex flex-wrap  lg:flex-nowrap gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {sections.map((section, index) => (
             <React.Fragment key={index}>
               <div className="items-center space-x-2 w-full">
@@ -134,7 +150,6 @@ const RegistrationForm = () => {
                 >
                   {isSectionCompleted(index) ? '✔' : ''} {section.title}
                 </button>
-                {/* Line between sections */}
               </div>
             </React.Fragment>
           ))}
@@ -142,13 +157,10 @@ const RegistrationForm = () => {
       </div>
     );
   };
-
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
-     
-    <p className='text-lg text-center text-[#512CAD] font-normal my-4'>Thank you for your interest in participating in the Harmonie Mente workshop! Please fill out the form below to complete your registration. We look forward to welcoming you.</p>
-   
-      {/* Section Navigation with Lines */}
+      <p className='text-lg text-center text-[#512CAD] font-normal my-4'>Thank you for your interest in joining the Harmonie Mente Workshop! Please complete the form below to finalize your registration. We look forward to welcoming you.</p>
+
       {renderNavigation()}
 
       {/* Active Section */}
@@ -177,15 +189,14 @@ const RegistrationForm = () => {
           ) : (
             <button
               className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
-              onClick={handleSubmit}  // Replace with your form submission logic
+              onClick={handleSubmit}
               disabled={!isFormComplete()}
             >
-              Submit
+              {`${loader ? "please wait..." : "submit"}`}
             </button>
           )}
-        
         </div>
-        <p className='text-[12px] text-left text-[#512CAD] my-3'>Please submit your completed registration  If you have any questions, feel free to contact us at info@harmoniemente.com</p>
+        <p className='text-[16px] text-left text-[#512CAD] my-3'>Please submit your completed registration  If you have any questions, feel free to contact us at info@harmoniemente.com</p>
       </div>
     </div>
   );
@@ -194,14 +205,14 @@ const RegistrationForm = () => {
 // Personal Information Section
 const PersonalInformation = ({ formData, errors, onChange }) => (
   <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-end gap-1 md:gap-2 mt-5">
-    {['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'zip'].map((field) => (
+    {['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'zip', 'country'].map((field) => (
       <div key={field}>
         <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field}</label>
         <input
           type={field === 'dob' ? 'date' : field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className={`mt-1 block w-full p-1 bg-gray-200 ${field == 'dob' && 'text-[10px] text-gray-400'} focus:outline-none rounded-md text-[12px]`}
+          className={`mt-1 block w-full p-1 bg-gray-200 ${field === 'dob' && 'text-[10px] text-gray-400'} focus:outline-none rounded-md text-[12px]`}
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
@@ -213,120 +224,164 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
 // Workshop Details Section
 const WorkshopDetails = ({ formData, errors, onChange }) => (
   <div className="space-y-4 flex flex-wrap gap-2 items-end">
-    {['workshopTitle', 'workshopDate', 'workshopTime', 'location'].map((field) => (
-      <div key={field}>
-        <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field}</label>
-        <input
-          type={field === 'workshopDate' ? 'date' : field === 'workshopTime' ? 'time' : 'text'}
-          value={formData[field]}
-          onChange={(e) => onChange(field, e.target.value)}
-          className={`mt-1 block w-full p-1 bg-gray-200 ${field == 'workshopDate' && 'text-[10px] text-gray-400'} ${field == 'workshopTime' && 'text-[10px] text-gray-400'} focus:outline-none rounded-md text-[12px]`}
-          required
-        />
-        {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
-      </div>
-    ))}
+    <div>
+      <label className="block text-[12px] font-medium text-[#512cad]">Workshop Title</label>
+      <input
+        type="text"
+        value="Harmonie Mente"
+        readOnly
+        className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+      />
+    </div>
+    <div>
+      <label className="block text-[12px] font-medium text-[#512cad]">Location</label>
+      <input
+        type="text"
+        value={formData.location}
+        onChange={(e) => onChange('location', e.target.value)}
+        className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+      />
+      {errors.location && <p className="text-red-500 text-xs">{errors.location}</p>}
+    </div>
   </div>
 );
 
 // Emergency Contact Section
-const EmergencyContact = ({ formData, errors, onChange }) => (
-  <div className="space-y-4 flex flex-wrap gap-2 items-end">
-    {['emergencyName', 'emergencyRelationship', 'emergencyPhone'].map((field) => (
-      <div key={field}>
-        <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field}</label>
-        <input
-          type="text"
-          value={formData[field]}
-          onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
-          required
-        />
-        {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
+const EmergencyContact = ({ formData, errors, onChange }) => {
+    // Define a mapping for the user-friendly field names
+    const fieldLabels = {
+      emergencyName: 'Emergency Contact Name',
+      emergencyRelationship: 'Relationship to Participant',
+      emergencyPhone: 'Phone Number',
+    };
+  
+    return (
+      <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-start gap-1 md:gap-2 mt-5">
+        {['emergencyName', 'emergencyRelationship', 'emergencyPhone'].map((field) => (
+          <div key={field}>
+            {/* Use the mapping to display the user-friendly field name */}
+            <label className="block text-[12px] font-medium text-[#512cad] capitalize">
+              {fieldLabels[field]} {/* Using the mapped label */}
+            </label>
+            <input
+              type={field === 'emergencyPhone' ? 'tel' : 'text'}
+              value={formData[field]}
+              onChange={(e) => onChange(field, e.target.value)}
+              className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+            />
+            {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
+          </div>
+        ))}
       </div>
-    ))}
-  </div>
-);
+    );
+  };
+  
 
 // Workshop Preferences Section
 const WorkshopPreferences = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
-    <div>
-      <label className="block text-[12px] font-medium text-[#512cad]">Do you have any specific goals for the workshop?</label>
-      <textarea
-        value={formData['goals']}
-        onChange={(e) => onChange('goals', e.target.value)}
-        className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
-        rows="4"
-        required
-      />
-      {errors['goals'] && <p className="text-red-500 text-xs">{errors['goals']}</p>}
+    <div className="space-y-4 my-3">
+      <div>
+        <label className="block text-[12px] font-medium text-[#512cad]">What specific goals do you have for this workshop?</label>
+        <textarea
+          value={formData.goals}
+          onChange={(e) => onChange('goals', e.target.value)}
+          className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+        ></textarea>
+        {errors.goals && <p className="text-red-500 text-xs">{errors.goals}</p>}
+      </div>
+  
+      <div>
+        <label className="block text-[12px] font-medium text-[#512cad]">Have you attended any previous Harmonie Mente workshops?</label>
+        <div className="mt-1 flex items-center gap-2">
+          <label className="text-[12px] text-gray-700">
+            <input
+              type="radio"
+              value="Yes"
+              checked={formData.previousWorkshops === 'Yes'}
+              onChange={(e) => onChange('previousWorkshops', e.target.value)}
+              className="mr-1"
+            />
+            Yes
+          </label>
+          <label className="text-[12px] text-gray-700">
+            <input
+              type="radio"
+              value="No"
+              checked={formData.previousWorkshops === 'No'}
+              onChange={(e) => onChange('previousWorkshops', e.target.value)}
+              className="mr-1"
+            />
+            No
+          </label>
+        </div>
+        {errors.previousWorkshops && <p className="text-red-500 text-xs">{errors.previousWorkshops}</p>}
+      </div>
+  
+      {/* Conditionally render the "If yes, please specify" textarea */}
+      {formData.previousWorkshops === 'Yes' && (
+        <div>
+          <label className="block text-[12px] font-medium text-[#512cad]">If yes, please specify</label>
+          <textarea
+            value={formData.workshopLevel}
+            onChange={(e) => onChange('workshopLevel', e.target.value)}
+            className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+            placeholder="Describe"
+          ></textarea>
+          {errors.workshopLevel && <p className="text-red-500 text-xs">{errors.workshopLevel}</p>}
+        </div>
+      )}
     </div>
+  );
+  
+  
+  
 
-    <div>
-      <label className="block text-[12px] font-medium text-[#512cad]">Have you attended any previous Harmonie Mente workshops?</label>
-      <div className="flex items-center space-x-4">
-        <input
-          type="radio"
-          name="previousWorkshops"
-          value="yes"
-          checked={formData['previousWorkshops'] === 'yes'}
-          onChange={(e) => onChange('previousWorkshops', e.target.value)}
-        /> <span className='text-[12px] text-[#c09a51]'>Yes</span>
-        <input
-          type="radio"
-          name="previousWorkshops"
-          value="no"
-          checked={formData['previousWorkshops'] === 'no'}
-          onChange={(e) => onChange('previousWorkshops', e.target.value)}
-        /> <span className='text-[12px] text-[#c09a51]'>No</span>
-        {errors['previousWorkshops'] && <p className="text-red-500 text-xs">{errors['previousWorkshops']}</p>}
+// Payment Information Section
+const PaymentInformation = () => (
+    <div className="space-y-2 w-full grid grid-cols-1 items-start gap-1 md:gap-2 mt-5">
+      <div>
+        <label className="block text-[18px] text-center font-medium text-[#512cad]">Workshop Fee:</label>
+        <p className="mt-1 text-[50px] text-center text-[#c09a51] font-bold"> $300 </p>
+      </div>
+      <div>
+        <label className="block text-[18px] text-center font-medium text-[#512cad]">Payment Method:</label>
+        <p className="block text-[16px] text-center font-medium text-[#c09a51]">
+          Secure payment link (provided upon registration)
+        </p>
       </div>
     </div>
-
-    <div>
-      <label className="block text-[12px] font-medium text-[#512cad]">If yes, please specify the level:</label>
-      <div className="flex items-center space-x-4">
-        <input
-          type="radio"
-          name="workshopLevel"
-          value="Beginner"
-          checked={formData['workshopLevel'] === 'Beginner'}
-          onChange={(e) => onChange('workshopLevel', e.target.value)}
-        /> <span className='text-[12px] text-[#c09a51]'>Beginner</span>
-        <input
-          type="radio"
-          name="workshopLevel"
-          value="Intermediate"
-          checked={formData['workshopLevel'] === 'Intermediate'}
-          onChange={(e) => onChange('workshopLevel', e.target.value)}
-        /> <span className='text-[12px] text-[#c09a51]'>Intermediate</span>
-        <input
-          type="radio"
-          name="workshopLevel"
-          value="Advanced"
-          checked={formData['workshopLevel'] === 'Advanced'}
-          onChange={(e) => onChange('workshopLevel', e.target.value)}
-        /> <span className='text-[12px] text-[#c09a51]'>Advanced</span>
-        {errors['workshopLevel'] && <p className="text-red-500 text-xs">{errors['workshopLevel']}</p>}
-      </div>
-    </div>
-  </div>
-);
+  );
 
 // Waiver and Consent Section
 const WaiverAndConsent = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
-    <div>
-      <label className="block text-[12px] font-medium text-[#512cad]">I agree to the waiver and terms</label>
-      <input
-        type="checkbox"
-        checked={formData['waiverAgreement']}
-        onChange={(e) => onChange('waiverAgreement', e.target.checked)}
-        className="mt-1 text-[12px]"
-        required
-      />
-      {errors['waiverAgreement'] && <p className="text-red-500 text-xs">{errors['waiverAgreement']}</p>}
+    <div className="space-y-6 mt-6">
+    <div className="bg-gray-100 p-4 rounded-lg">
+      <p className="text-lg font-semibold text-[#512cad]">By registering for this workshop, you agree to the following:</p>
+  
+      <ul className="list-disc pl-5 mt-2 text-sm text-gray-700">
+        <li className="mb-2">
+          I understand that participation in this workshop may involve physical, mental, or emotional activities, and I take full responsibility for my well-being during the session.
+        </li>
+        <li className="mb-2">
+          I consent to the use of photographs, video, and audio recordings made during the workshop for educational and development purposes. (Note: We ensure compliance with confidentiality regulations.)
+        </li>
+      </ul>
+  
+      <div className="mt-4">
+        <label className="inline-flex items-center text-sm text-[#512cad]">
+          <input
+            type="checkbox"
+            checked={formData.waiverAgreement}
+            onChange={(e) => onChange('waiverAgreement', e.target.checked)}
+            className="mr-2 rounded-md border-gray-300"
+          />
+          I agree to the terms and conditions.
+        </label>
+  
+        {errors.waiverAgreement && (
+          <p className="text-red-500 text-xs mt-1">{errors.waiverAgreement}</p>
+        )}
+      </div>
     </div>
   </div>
 );

@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const SupportGroupRegistrationForm = () => {
   const [activeSection, setActiveSection] = useState(0);
+  const [loader, setLoader] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -11,16 +14,16 @@ const SupportGroupRegistrationForm = () => {
     state: '',
     zip: '',
     country: '',
-    childFullName: '',
+    childFirstName: '',
     childAge: '',
-    childDiagnosis: '',
+    diagnosis: '',
     primaryCaregiver: '',
-    challenges: '',
-    participationReason: '',
-    gainExpectations: '',
+    groupChallenges: '',
+    reasonsForJoining: '',
+    goals: '',
     previousGroupParticipation: '',
-    dietaryRestrictions: '',
-    waiverAgreement: false,
+    previousGroupDetails: '',
+    paymentDate: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -28,15 +31,15 @@ const SupportGroupRegistrationForm = () => {
 
   const sections = [
     { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'street', 'city', 'state', 'zip', 'country'] },
-    { title: 'Child\'s Information', component: ChildInformation, fields: ['childFullName', 'childAge', 'childDiagnosis', 'primaryCaregiver', 'challenges'] },
-    { title: 'Group Participation Preferences', component: GroupParticipationPreferences, fields: ['participationReason', 'gainExpectations', 'previousGroupParticipation', 'dietaryRestrictions'] },
-    { title: 'Waiver and Consent', component: WaiverAndConsent, fields: ['waiverAgreement'] },
+    { title: 'Child’s Information', component: ChildInformation, fields: ['childFirstName', 'childAge', 'diagnosis', 'primaryCaregiver'] },
+    { title: 'Support Needs and Group Preferences', component: GroupPreferences, fields: ['groupChallenges', 'reasonsForJoining', 'goals', 'previousGroupParticipation', 'previousGroupDetails'] },
+    { title: 'Payment Information', component: PaymentInformation, fields: [] }, // No fields to validate
+    { title: 'Confidentiality Agreement', component: ConfidentialityAgreement, fields: [] },
   ];
+  const isSectionCompleted = (index) => completedSections.includes(index);
 
-  // Handle Next Section
   const handleNextSection = () => {
     if (validateCurrentSection()) {
-      // Mark current section as completed
       setCompletedSections([...completedSections, activeSection]);
       if (activeSection < sections.length - 1) {
         setActiveSection(activeSection + 1);
@@ -44,69 +47,87 @@ const SupportGroupRegistrationForm = () => {
     }
   };
 
-  // Handle Previous Section
+  const handleSubmit = async () => {
+    try {
+      setLoader(true);
+      const response = await axios.post(`https://admin.harmoniemente.com/api/public/support-group-registration`, formData);
+      console.log(response);
+      if (response.status === 200) {
+        setLoader(false);
+        Swal.fire({
+          title: 'Success!',
+          text: 'Your form has been submitted.',
+          icon: 'success',
+          confirmButtonText: 'Great',
+        }).then(() => {
+          window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=PXBlk-X5';
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.response.data.message,
+        icon: 'error',
+        confirmButtonText: 'Close',
+      });
+      setLoader(false);
+    }
+  };
+
   const handlePreviousSection = () => {
     if (activeSection > 0) {
       setActiveSection(activeSection - 1);
     }
   };
 
-  // Handle form field changes
   const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  // Validate current section
+
+
+
   const validateCurrentSection = () => {
     const sectionFields = sections[activeSection].fields;
     let currentErrors = {};
+
     sectionFields.forEach((field) => {
       if (formData[field] === '' || (Array.isArray(formData[field]) && formData[field].length === 0)) {
         currentErrors[field] = 'This field is required';
       }
     });
+
     setErrors(currentErrors);
-    return Object.keys(currentErrors).length === 0; // Return true if no errors
+    return Object.keys(currentErrors).length === 0;
   };
 
-  // Check if a section is completed
-  const isSectionCompleted = (index) => completedSections.includes(index);
-
-  // Check if all required fields are filled to enable the Submit button
   const isFormComplete = () => {
+    // Don't apply validation to PaymentInformation
+    if (activeSection === sections.length - 1) {
+      return true; // Automatically complete if it's the last section
+    }
     return sections.every((section) => {
-      return section.fields.every((field) => {
-        return formData[field] !== '' && !(field === 'waiverAgreement' && !formData[field]);
-      });
+      return section.fields.every((field) => formData[field] !== '');
     });
   };
 
-  // Render the required section dynamically
   const renderSection = () => {
     const SectionComponent = sections[activeSection].component;
     return <SectionComponent formData={formData} errors={errors} onChange={handleChange} />;
   };
-
-  // Render the section navigation with lines and tick marks
   const renderNavigation = () => {
     return (
       <div className="space-y-4">
-        <div className="flex items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {sections.map((section, index) => (
-            <React.Fragment key={index}>
-              <div className="flex items-center space-x-2">
-                <button
-                  className={`px-4 py-2 text-sm font-medium rounded-md ${activeSection === index ? 'bg-blue-500 text-white' : isSectionCompleted(index) ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-800'}`}
-                  onClick={() => setActiveSection(index)}
-                >
-                  {isSectionCompleted(index) ? '✔' : ''} {section.title}
-                </button>
-                {/* Line between sections */}
-                {index < sections.length - 1 && (
-                  <div className={`h-px flex-1 ${isSectionCompleted(index) ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                )}
-              </div>
-            </React.Fragment>
+            <div key={index}>
+              <button
+                disabled
+                className={`px-2 py-1 w-full text-[12px] font-medium rounded-full ${activeSection === index ? 'bg-[#512cad] text-white' : isSectionCompleted(index) ? 'bg-[#c09a51] text-white' : 'bg-gray-200 text-gray-800'}`}
+              >
+                {isSectionCompleted(index) ? '✔' : ''} {section.title}
+              </button>
+            </div>
           ))}
         </div>
       </div>
@@ -114,43 +135,39 @@ const SupportGroupRegistrationForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-semibold text-center mb-6">Harmonie Mente Monthly Online Support Group Registration</h1>
-      <h2 className="text-lg font-medium text-center mb-6">For Mothers with Children with Special Needs</h2>
+    <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
+      <p className='text-lg text-center text-[#512CAD] font-normal my-4'>Thank you for your interest in joining our monthly support group. Please complete the form below to register. We look forward to having you join our community.</p>
 
-      {/* Section Navigation with Lines */}
       {renderNavigation()}
 
       {/* Active Section */}
-      <div className="mt-6">
+      <div className="">
         {renderSection()}
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between mt-3">
           {activeSection > 0 && (
             <button
-              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md"
+              className="px-4 py-2 bg-[#512cad] text-white rounded-md"
               onClick={handlePreviousSection}
-              disabled={activeSection === 0}
             >
               Previous
             </button>
           )}
           {activeSection < sections.length - 1 ? (
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded-md"
+              className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
               onClick={handleNextSection}
-              disabled={activeSection === sections.length - 1}
             >
               Next
             </button>
           ) : (
             <button
-              className="px-4 py-2 bg-green-500 text-white rounded-md"
-              onClick={() => alert('Form submitted!')}  // Replace with your form submission logic
+              className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
+              onClick={handleSubmit}
               disabled={!isFormComplete()}
             >
-              Submit
+              {`${loader ? "please wait..." : "submit"}`}
             </button>
           )}
         </div>
@@ -161,15 +178,15 @@ const SupportGroupRegistrationForm = () => {
 
 // Personal Information Section
 const PersonalInformation = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
+  <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-end gap-1 md:gap-2 mt-5">
     {['fullName', 'email', 'phone', 'street', 'city', 'state', 'zip', 'country'].map((field) => (
       <div key={field}>
-        <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
+        <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>
         <input
-          type={field === 'email' ? 'email' : 'text'}
+          type={field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          className={`mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]`}
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
@@ -180,139 +197,73 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
 
 // Child's Information Section
 const ChildInformation = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
-    {['childFullName', 'childAge', 'childDiagnosis'].map((field) => (
+  <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-end gap-1 md:gap-2 mt-5">
+    {['childFirstName', 'childAge', 'diagnosis', 'primaryCaregiver'].map((field) => (
       <div key={field}>
-        <label className="block text-sm font-medium text-gray-700 capitalize">{field}</label>
+        <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>
         <input
-          type="text"
+          type={field === 'primaryCaregiver' || 'childFirstName' ? 'text' : 'number'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          className={`mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]`}
           required
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
       </div>
     ))}
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700">Primary Caregiver</label>
-      <div className="flex items-center space-x-4">
-        {['Mother', 'Father', 'Other'].map((option) => (
-          <div key={option}>
-            <input
-              type="radio"
-              name="primaryCaregiver"
-              value={option}
-              checked={formData['primaryCaregiver'] === option}
-              onChange={(e) => onChange('primaryCaregiver', e.target.value)}
-            />
-            <span>{option}</span>
-          </div>
-        ))}
-        {errors['primaryCaregiver'] && <p className="text-red-500 text-xs">{errors['primaryCaregiver']}</p>}
-      </div>
-    </div>
-
-    <div>
-      <label className="block text-sm font-medium text-gray-700">Challenges/Areas to Address in Group</label>
-      <textarea
-        value={formData['challenges']}
-        onChange={(e) => onChange('challenges', e.target.value)}
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        rows="4"
-        required
-      />
-      {errors['challenges'] && <p className="text-red-500 text-xs">{errors['challenges']}</p>}
-    </div>
   </div>
 );
 
-// Group Participation Preferences Section
-const GroupParticipationPreferences = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
-    <div>
-      <label className="block text-sm font-medium text-gray-700">Why are you interested in joining this support group?</label>
-      <textarea
-        value={formData['participationReason']}
-        onChange={(e) => onChange('participationReason', e.target.value)}
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        rows="4"
-        required
-      />
-      {errors['participationReason'] && <p className="text-red-500 text-xs">{errors['participationReason']}</p>}
-    </div>
+// Group Preferences Section
+const GroupPreferences = ({ formData, errors, onChange }) => {
+  // Define a mapping for the user-friendly field names
+  const fieldLabels = {
+    groupChallenges: 'What specific challenges or areas would you like to address in the group?',
+    reasonsForJoining: 'Why are you interested in joining this support group?',
+    goals: 'What would you hope to gain from participating in this support group?',
+    previousGroupParticipation: 'Have you participated in similar support groups before?',
+    previousGroupDetails: 'If yes, please specify',
+  };
 
-    <div>
-      <label className="block text-sm font-medium text-gray-700">What would you hope to gain from participating in this group?</label>
-      <textarea
-        value={formData['gainExpectations']}
-        onChange={(e) => onChange('gainExpectations', e.target.value)}
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-        rows="4"
-        required
-      />
-      {errors['gainExpectations'] && <p className="text-red-500 text-xs">{errors['gainExpectations']}</p>}
+  return (
+    <div className="space-y-4 my-3">
+      {['groupChallenges', 'reasonsForJoining', 'goals', 'previousGroupParticipation', 'previousGroupDetails'].map((field) => (
+        <div key={field}>
+          <label className="block text-[12px] font-medium text-[#512cad]">
+            {fieldLabels[field]} {/* Using the mapped label */}
+          </label>
+          <textarea
+            value={formData[field]}
+            onChange={(e) => onChange(field, e.target.value)}
+            className="mt-1 block w-full p-2 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+            required
+          />
+          {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
+        </div>
+      ))}
     </div>
+  );
+};
 
-    <div>
-      <label className="block text-sm font-medium text-gray-700">Have you participated in any similar support groups in the past?</label>
-      <div className="flex items-center space-x-4">
-        <input
-          type="radio"
-          name="previousGroupParticipation"
-          value="yes"
-          checked={formData['previousGroupParticipation'] === 'yes'}
-          onChange={(e) => onChange('previousGroupParticipation', e.target.value)}
-        /> <span>Yes</span>
-        <input
-          type="radio"
-          name="previousGroupParticipation"
-          value="no"
-          checked={formData['previousGroupParticipation'] === 'no'}
-          onChange={(e) => onChange('previousGroupParticipation', e.target.value)}
-        /> <span>No</span>
-        {errors['previousGroupParticipation'] && <p className="text-red-500 text-xs">{errors['previousGroupParticipation']}</p>}
-      </div>
-    </div>
 
-    <div>
-      <label className="block text-sm font-medium text-gray-700">Do you have any dietary restrictions or allergies?</label>
-      <div className="flex items-center space-x-4">
-        <input
-          type="radio"
-          name="dietaryRestrictions"
-          value="yes"
-          checked={formData['dietaryRestrictions'] === 'yes'}
-          onChange={(e) => onChange('dietaryRestrictions', e.target.value)}
-        /> <span>Yes</span>
-        <input
-          type="radio"
-          name="dietaryRestrictions"
-          value="no"
-          checked={formData['dietaryRestrictions'] === 'no'}
-          onChange={(e) => onChange('dietaryRestrictions', e.target.value)}
-        /> <span>No</span>
-        {errors['dietaryRestrictions'] && <p className="text-red-500 text-xs">{errors['dietaryRestrictions']}</p>}
-      </div>
-    </div>
+// Payment Information Section
+const PaymentInformation = () => (
+  <div className="my-3 space-y-2">
+    <p className="text-[12px] font-medium text-[#512cad]">
+      Monthly Support Group Fee: <span className="text-gray-700">$50</span>
+    </p>
+    <p className="text-[12px] font-medium text-[#512cad]">
+      Payment Method: <span className="text-gray-700">Secure payment link (provided after registration)</span>
+    </p>
   </div>
 );
 
-// Waiver and Consent Section
-const WaiverAndConsent = ({ formData, errors, onChange }) => (
-  <div className="space-y-4">
-    <div>
-      <label className="block text-sm font-medium text-gray-700">I agree to the waiver and terms</label>
-      <input
-        type="checkbox"
-        checked={formData['waiverAgreement']}
-        onChange={(e) => onChange('waiverAgreement', e.target.checked)}
-        className="mt-1"
-        required
-      />
-      {errors['waiverAgreement'] && <p className="text-red-500 text-xs">{errors['waiverAgreement']}</p>}
-    </div>
+
+
+// Confidentiality Agreement Section
+const ConfidentialityAgreement = () => (
+  <div className="my-3">
+    <p className="text-sm">By submitting this form, you agree to maintain the confidentiality of the group and adhere to its guidelines.</p>
   </div>
 );
 

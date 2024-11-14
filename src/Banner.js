@@ -11,9 +11,11 @@ function Banner() {
       
       {/* Text */}
       <div className="flex items-center justify-center w-full h-full">
-        <h1 className="text-[20px] z-20 text-xl md:text-3xl tracking-wide text-center text-[#ffffff] font-semibold">
-          Workshop for Diversity
-        </h1>
+      <div className="text-[22px] z-20 text-xl md:text-3xl tracking-wide text-center text-[#ffffff] font-semibold">
+      <p>Harmonie Mente Workshop Registration Form</p>
+     
+        </div>
+   
       </div>
     </div>
   )
