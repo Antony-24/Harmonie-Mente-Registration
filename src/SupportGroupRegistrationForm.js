@@ -28,14 +28,16 @@ const SupportGroupRegistrationForm = () => {
 
   const [errors, setErrors] = useState({});
   const [completedSections, setCompletedSections] = useState([]);
+  const [agreementSigned, setAgreementSigned] = useState(false); // Added state for agreement
 
   const sections = [
     { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'street', 'city', 'state', 'zip', 'country'] },
     { title: 'Child’s Information', component: ChildInformation, fields: ['childFirstName', 'childAge', 'diagnosis', 'primaryCaregiver'] },
     { title: 'Support Needs and Group Preferences', component: GroupPreferences, fields: ['groupChallenges', 'reasonsForJoining', 'goals', 'previousGroupParticipation', 'previousGroupDetails'] },
-    { title: 'Payment Information', component: PaymentInformation, fields: [] }, // No fields to validate
+    { title: 'Payment Information', component: PaymentInformation, fields: [] },
     { title: 'Confidentiality Agreement', component: ConfidentialityAgreement, fields: [] },
   ];
+
   const isSectionCompleted = (index) => completedSections.includes(index);
 
   const handleNextSection = () => {
@@ -46,7 +48,6 @@ const SupportGroupRegistrationForm = () => {
       }
     }
   };
-
   const handleSubmit = async () => {
     try {
       setLoader(true);
@@ -84,6 +85,9 @@ const SupportGroupRegistrationForm = () => {
     setFormData({ ...formData, [field]: value });
   };
 
+  const handleAgreementChange = (e) => {
+    setAgreementSigned(e.target.value === 'yes');
+  };
 
 
 
@@ -97,9 +101,15 @@ const SupportGroupRegistrationForm = () => {
       }
     });
 
+    if (activeSection === sections.length - 1 && !agreementSigned) {
+      currentErrors.agreement = 'You must agree to the confidentiality agreement';
+    }
+
     setErrors(currentErrors);
     return Object.keys(currentErrors).length === 0;
   };
+
+
 
   const isFormComplete = () => {
     // Don't apply validation to PaymentInformation
@@ -111,14 +121,17 @@ const SupportGroupRegistrationForm = () => {
     });
   };
 
+
+
   const renderSection = () => {
     const SectionComponent = sections[activeSection].component;
     return <SectionComponent formData={formData} errors={errors} onChange={handleChange} />;
   };
-  const renderNavigation = () => {
+
+
+   const renderNavigation = () => {
     return (
       <div className="space-y-4">
-      
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {sections.map((section, index) => (
             <div key={index}>
@@ -135,9 +148,12 @@ const SupportGroupRegistrationForm = () => {
     );
   };
 
+
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
-      <p className='text-lg text-center text-[#512CAD] font-normal my-4'>  Thank you for your interest in joining our monthly support group. This group aims to provide a compassionate space for emotional support, shared experiences, and valuable resources for mothers raising children with special needs. Please complete the form below to register. We look forward to having you join our community.</p>
+      <p className="text-lg text-center text-[#512CAD] font-normal my-4">
+        Thank you for your interest in joining our monthly support group. This group aims to provide a compassionate space for emotional support, shared experiences, and valuable resources for mothers raising children with special needs. Please complete the form below to register. We look forward to having you join our community.
+      </p>
 
       {renderNavigation()}
 
@@ -261,10 +277,33 @@ const PaymentInformation = () => (
 
 
 
-// Confidentiality Agreement Section
-const ConfidentialityAgreement = () => (
-  <div className="my-3">
+// Confidentiality Agreement Section with Radio Buttons
+const ConfidentialityAgreement = ({ formData, errors, onChange }) => (
+  <div className="my-3 space-y-2">
     <p className="text-sm">By submitting this form, you agree to maintain the confidentiality of the group and adhere to its guidelines.</p>
+
+    <div className="flex items-center space-x-3">
+      <input
+        type="radio"
+        id="agree"
+        name="agreement"
+        value="yes"
+        onChange={onChange}
+        checked={formData.agreementSigned === true}
+      />
+      <label htmlFor="agree" className="text-sm">I agree</label>
+
+      <input
+        type="radio"
+        id="disagree"
+        name="agreement"
+        value="no"
+        onChange={onChange}
+        checked={formData.agreementSigned === false}
+      />
+      <label htmlFor="disagree" className="text-sm">I disagree</label>
+    </div>
+    {errors.agreement && <p className="text-red-500 text-xs">{errors.agreement}</p>}
   </div>
 );
 
