@@ -118,6 +118,7 @@ const SupportGroupRegistrationForm = () => {
   const renderNavigation = () => {
     return (
       <div className="space-y-4">
+      
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {sections.map((section, index) => (
             <div key={index}>
@@ -136,7 +137,7 @@ const SupportGroupRegistrationForm = () => {
 
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
-      <p className='text-lg text-center text-[#512CAD] font-normal my-4'>Thank you for your interest in joining our monthly support group. Please complete the form below to register. We look forward to having you join our community.</p>
+      <p className='text-lg text-center text-[#512CAD] font-normal my-4'>  Thank you for your interest in joining our monthly support group. This group aims to provide a compassionate space for emotional support, shared experiences, and valuable resources for mothers raising children with special needs. Please complete the form below to register. We look forward to having you join our community.</p>
 
       {renderNavigation()}
 
