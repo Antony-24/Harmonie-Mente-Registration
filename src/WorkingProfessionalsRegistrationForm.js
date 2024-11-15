@@ -100,7 +100,7 @@ const WorkingProfessionalsSupportGroupForm = () => {
       try {
         setLoader(true);
         const transformedData = { ...formData };
-        const response = await axios.post('https://admin.harmoniemente.com/api/public/support-group', transformedData);
+        const response = await axios.post('https://admin.harmoniemente.com/api/public/support-group-men', transformedData);
   
         if (response.status === 200) {
           Swal.fire({
@@ -109,7 +109,7 @@ const WorkingProfessionalsSupportGroupForm = () => {
             icon: 'success',
             confirmButtonText: 'Great',
           }).then(() => {
-            window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=PXBlk-X5';
+            window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=h0Tuh.85';
           });
         }
       } catch (error) {
@@ -157,7 +157,7 @@ const WorkingProfessionalsSupportGroupForm = () => {
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
       <p className="text-lg text-center text-[#512CAD] font-normal my-4">
-        Welcome to Harmonie Mente’s Working Professionals Men's Support Group. This group offers a safe, confidential, and supportive space for working men to share experiences, address challenges, and connect with others. The monthly fee for participation is $65, covering all group sessions and resources.
+      This program provides a safe, confidential, and supportive space for professional men to share experiences, navigate personal and work-related challenges, and foster meaningful connections with peers.
       </p>
 
       {renderNavigation()}
@@ -208,23 +208,55 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
 );
 
 // Location Section
-const Location = ({ formData, errors, onChange }) => (
-  <div className="space-y-2 mt-5">
-    <div>
-      <label className="block text-[12px] font-medium text-[#512cad]">Country of Residence</label>
-      <select
-        value={formData.country}
-        onChange={(e) => onChange('country', e.target.value)}
-        className="mt-1 block w-full p-1 bg-gray-200 rounded-md text-[12px]"
-      >
-        <option value="">Select a country</option>
-        <option value="india">india</option>
-        {/* Add country options here */}
-      </select>
-      {errors.country && <p className="text-red-500 text-xs">{errors.country}</p>}
+const Location = ({ formData, errors, onChange }) => {
+  const countries = [
+    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", 
+    "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", 
+    "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", 
+    "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", 
+    "Comoros", "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Denmark", 
+    "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", 
+    "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", 
+    "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", 
+    "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", 
+    "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", 
+    "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", 
+    "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", 
+    "Montenegro", "Morocco", "Mozambique", "Myanmar (Burma)", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", 
+    "Nicaragua", "Niger", "Nigeria", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", 
+    "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", 
+    "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", 
+    "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", 
+    "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", 
+    "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", 
+    "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", 
+    "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+  ];
+
+  return (
+    <div className="space-y-2 mt-5">
+      <div>
+        <label className="block text-[12px] font-medium text-[#512cad]">
+          Country of Residence
+        </label>
+        <select
+          value={formData.country}
+          onChange={(e) => onChange("country", e.target.value)}
+          className="mt-1 block w-full p-1 bg-gray-200 rounded-md text-[12px]"
+        >
+          <option value="">Select a country</option>
+          {countries.map((country) => (
+            <option key={country} value={country.toLowerCase()}>
+              {country}
+            </option>
+          ))}
+        </select>
+        {errors.country && <p className="text-red-500 text-xs">{errors.country}</p>}
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
 
 // Professional Background Section
 const ProfessionalBackground = ({ formData, errors, onChange }) => (
@@ -304,8 +336,16 @@ const Availability = ({ formData, errors, onChange }) => (
 // Payment Section
 const PaymentInformation = () => (
   <div className="space-y-2 mt-5">
-    <p className="text-[12px] font-medium text-[#512cad]">The monthly fee for participation is $65, covering all group sessions and resources.</p>
-    <p className="text-[12px]">Payment can be made via a secure Harmonie Mente Stripe payment link (you will receive the link after submitting the form).</p>
+    <div>
+        <label className="block text-[18px] text-center font-medium text-[#512cad]">Workshop Fee:</label>
+        <p className="mt-1 text-[50px] text-center text-[#c09a51] font-bold"> $65 </p>
+      </div>
+      <div>
+        <label className="block text-[18px] text-center font-medium text-[#512cad]">Payment Method:</label>
+        <p className="block text-[16px] text-center font-medium text-[#c09a51]">
+         The fee covers all group sessions and access to additional resources.
+        </p>
+      </div>
   </div>
 );
 
