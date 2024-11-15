@@ -22,9 +22,7 @@ const RegistrationForm = () => {
     emergencyRelationship: '',
     emergencyPhone: '',
     goals: '',
-    previousWorkshops: '',
     workshopLevel: '',
-    waiverAgreement: false,
     paymentDate: '',
     workshopDate:'01-03-2024',
     workshopTime:'undefined'
@@ -59,7 +57,13 @@ const RegistrationForm = () => {
   const handleSubmit = async () => {
     try{
         setLoader(true)
-        const response = await axios.post(`https://admin.harmoniemente.com/api/public/contact-enquiry`, formData);
+        const transformedData = {
+          ...formData,
+          previousWorkshops: formData.previousWorkshops ? 'yes' : 'no',
+          waiverAgreement: formData.waiverAgreement ? 'yes' : 'no',
+
+        };
+        const response = await axios.post(`https://admin.harmoniemente.com/api/public/contact-enquiry`,transformedData);
         console.log(response);
         if (response.status == 200) {
           setLoader(false);

@@ -7,6 +7,8 @@ import RegistrationForm from './RegistrationForm';
 import SecondSection from './SecondSection';
 import SupportGroupRegistrationForm from './SupportGroupRegistrationForm';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import WorkingProfessionalsRegistrationForm from './WorkingProfessionalsRegistrationForm';
+import ThirdSection from './ThirdSection';
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
           <Routes>
             <Route path="/" element={<FirstSection />} />
             <Route path="/support-group-registration" element={<SecondSection />} />
+            <Route path="/mens-group-registration" element={<ThirdSection />} />
           </Routes>
         </div>
 

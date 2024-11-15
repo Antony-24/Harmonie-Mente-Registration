@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 const SupportGroupRegistrationForm = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [loader, setLoader] = useState(false);
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -23,22 +24,19 @@ const SupportGroupRegistrationForm = () => {
     goals: '',
     previousGroupParticipation: '',
     previousGroupDetails: '',
-    paymentDate: '',
+    agreementSigned: false,
   });
 
   const [errors, setErrors] = useState({});
   const [completedSections, setCompletedSections] = useState([]);
-  const [agreementSigned, setAgreementSigned] = useState(false); // Added state for agreement
 
   const sections = [
     { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'street', 'city', 'state', 'zip', 'country'] },
     { title: 'Child’s Information', component: ChildInformation, fields: ['childFirstName', 'childAge', 'diagnosis', 'primaryCaregiver'] },
     { title: 'Support Needs and Group Preferences', component: GroupPreferences, fields: ['groupChallenges', 'reasonsForJoining', 'goals', 'previousGroupParticipation', 'previousGroupDetails'] },
     { title: 'Payment Information', component: PaymentInformation, fields: [] },
-    { title: 'Confidentiality Agreement', component: ConfidentialityAgreement, fields: [] },
+    { title: 'Confidentiality Agreement', component: ConfidentialityAgreement, fields: ['agreementSigned'] },
   ];
-
-  const isSectionCompleted = (index) => completedSections.includes(index);
 
   const handleNextSection = () => {
     if (validateCurrentSection()) {
@@ -48,32 +46,6 @@ const SupportGroupRegistrationForm = () => {
       }
     }
   };
-  const handleSubmit = async () => {
-    try {
-      setLoader(true);
-      const response = await axios.post(`https://admin.harmoniemente.com/api/public/support-group-registration`, formData);
-      console.log(response);
-      if (response.status === 200) {
-        setLoader(false);
-        Swal.fire({
-          title: 'Success!',
-          text: 'Your form has been submitted.',
-          icon: 'success',
-          confirmButtonText: 'Great',
-        }).then(() => {
-          window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=PXBlk-X5';
-        });
-      }
-    } catch (error) {
-      Swal.fire({
-        title: 'Error',
-        text: error.response.data.message,
-        icon: 'error',
-        confirmButtonText: 'Close',
-      });
-      setLoader(false);
-    }
-  };
 
   const handlePreviousSection = () => {
     if (activeSection > 0) {
@@ -81,15 +53,12 @@ const SupportGroupRegistrationForm = () => {
     }
   };
 
-  const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
-  };
-
-  const handleAgreementChange = (e) => {
-    setAgreementSigned(e.target.value === 'yes');
-  };
-
-
+const handleChange = (field, value) => {
+  setFormData((prev) => ({
+    ...prev,
+    [field]: field === 'previousGroupParticipation' ? value : value,
+  }));
+};
 
   const validateCurrentSection = () => {
     const sectionFields = sections[activeSection].fields;
@@ -101,53 +70,72 @@ const SupportGroupRegistrationForm = () => {
       }
     });
 
-    if (activeSection === sections.length - 1 && !agreementSigned) {
-      currentErrors.agreement = 'You must agree to the confidentiality agreement';
+    if (activeSection === sections.length - 1 && !formData.agreementSigned) {
+      currentErrors.agreementSigned = 'You must agree to the confidentiality agreement.';
     }
 
     setErrors(currentErrors);
     return Object.keys(currentErrors).length === 0;
   };
 
+  const handleSubmit = async () => {
+    try {
+      setLoader(true);
+      const transformedData = {
+        ...formData,
+        previousGroupParticipation: formData.previousGroupParticipation ? 'yes' : 'no',
+      };
+      const response = await axios.post('https://admin.harmoniemente.com/api/public/support-group', transformedData);
 
-
-  const isFormComplete = () => {
-    // Don't apply validation to PaymentInformation
-    if (activeSection === sections.length - 1) {
-      return true; // Automatically complete if it's the last section
+      if (response.status === 200) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Your form has been submitted.',
+          icon: 'success',
+          confirmButtonText: 'Great',
+        }).then(() => {
+          window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=dDw79KM7';
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.response?.data?.message || 'Something went wrong.',
+        icon: 'error',
+        confirmButtonText: 'Close',
+      });
+    } finally {
+      setLoader(false);
     }
-    return sections.every((section) => {
-      return section.fields.every((field) => formData[field] !== '');
-    });
   };
-
-
 
   const renderSection = () => {
     const SectionComponent = sections[activeSection].component;
     return <SectionComponent formData={formData} errors={errors} onChange={handleChange} />;
   };
 
-
-   const renderNavigation = () => {
-    return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {sections.map((section, index) => (
-            <div key={index}>
-              <button
-                disabled
-                className={`px-2 py-1 w-full text-[12px] font-medium rounded-full ${activeSection === index ? 'bg-[#512cad] text-white' : isSectionCompleted(index) ? 'bg-[#c09a51] text-white' : 'bg-gray-200 text-gray-800'}`}
-              >
-                {isSectionCompleted(index) ? '✔' : ''} {section.title}
-              </button>
-            </div>
-          ))}
-        </div>
+  const renderNavigation = () => (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {sections.map((section, index) => (
+          <div key={index}>
+            <button
+              disabled
+              className={`px-2 py-1 w-full text-[12px] font-medium rounded-full ${
+                activeSection === index
+                  ? 'bg-[#512cad] text-white'
+                  : completedSections.includes(index)
+                  ? 'bg-[#c09a51] text-white'
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              {completedSections.includes(index) ? '✔' : ''} {section.title}
+            </button>
+          </div>
+        ))}
       </div>
-    );
-  };
-
+    </div>
+  );
 
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
@@ -157,34 +145,25 @@ const SupportGroupRegistrationForm = () => {
 
       {renderNavigation()}
 
-      {/* Active Section */}
-      <div className="">
+      <div>
         {renderSection()}
-
-        {/* Navigation Buttons */}
         <div className="flex justify-between mt-3">
           {activeSection > 0 && (
-            <button
-              className="px-4 py-2 bg-[#512cad] text-white rounded-md"
-              onClick={handlePreviousSection}
-            >
+            <button className="px-4 py-2 bg-[#512cad] text-white rounded-md" onClick={handlePreviousSection}>
               Previous
             </button>
           )}
           {activeSection < sections.length - 1 ? (
-            <button
-              className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
-              onClick={handleNextSection}
-            >
+            <button className="px-4 py-2 bg-[#c09a51] text-white rounded-md" onClick={handleNextSection}>
               Next
             </button>
           ) : (
             <button
               className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
               onClick={handleSubmit}
-              disabled={!isFormComplete()}
+              disabled={loader || !formData.agreementSigned}
             >
-              {`${loader ? "please wait..." : "submit"}`}
+              {loader ? 'Please wait...' : 'Submit'}
             </button>
           )}
         </div>
@@ -193,9 +172,8 @@ const SupportGroupRegistrationForm = () => {
   );
 };
 
-// Personal Information Section
 const PersonalInformation = ({ formData, errors, onChange }) => (
-  <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-end gap-1 md:gap-2 mt-5">
+  <div className="space-y-2 grid grid-cols-1 lg:grid-cols-3 gap-2 mt-5">
     {['fullName', 'email', 'phone', 'street', 'city', 'state', 'zip', 'country'].map((field) => (
       <div key={field}>
         <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>
@@ -203,8 +181,7 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
           type={field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className={`mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]`}
-          required
+          className="mt-1 block w-full p-1 bg-gray-200 rounded-md text-[12px]"
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
       </div>
@@ -212,18 +189,16 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
   </div>
 );
 
-// Child's Information Section
 const ChildInformation = ({ formData, errors, onChange }) => (
-  <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-end gap-1 md:gap-2 mt-5">
+  <div className="space-y-2 grid grid-cols-1 lg:grid-cols-3 gap-2 mt-5">
     {['childFirstName', 'childAge', 'diagnosis', 'primaryCaregiver'].map((field) => (
       <div key={field}>
         <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>
         <input
-          type={field === 'primaryCaregiver' || 'childFirstName' ? 'text' : 'number'}
+          type={field === 'childAge' ? 'number' : 'text'}
           value={formData[field]}
           onChange={(e) => onChange(field, e.target.value)}
-          className={`mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]`}
-          required
+          className="mt-1 block w-full p-1 bg-gray-200 rounded-md text-[12px]"
         />
         {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
       </div>
@@ -231,9 +206,7 @@ const ChildInformation = ({ formData, errors, onChange }) => (
   </div>
 );
 
-// Group Preferences Section
 const GroupPreferences = ({ formData, errors, onChange }) => {
-  // Define a mapping for the user-friendly field names
   const fieldLabels = {
     groupChallenges: 'What specific challenges or areas would you like to address in the group?',
     reasonsForJoining: 'Why are you interested in joining this support group?',
@@ -242,68 +215,97 @@ const GroupPreferences = ({ formData, errors, onChange }) => {
     previousGroupDetails: 'If yes, please specify',
   };
 
+  const handleYesNoChange = (value) => {
+    onChange('previousGroupParticipation', value === 'yes');
+    if (value !== 'yes') onChange('previousGroupDetails', '');
+  };
+
   return (
     <div className="space-y-4 my-3">
-      {['groupChallenges', 'reasonsForJoining', 'goals', 'previousGroupParticipation', 'previousGroupDetails'].map((field) => (
+      {['groupChallenges', 'reasonsForJoining', 'goals'].map((field) => (
         <div key={field}>
-          <label className="block text-[12px] font-medium text-[#512cad]">
-            {fieldLabels[field]} {/* Using the mapped label */}
-          </label>
+          <label className="block text-[12px] font-medium text-[#512cad]">{fieldLabels[field]}</label>
           <textarea
             value={formData[field]}
             onChange={(e) => onChange(field, e.target.value)}
-            className="mt-1 block w-full p-2 bg-gray-200 focus:outline-none rounded-md text-[12px]"
-            required
+            className="mt-1 block w-full p-2 bg-gray-200 rounded-md text-[12px]"
           />
           {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
         </div>
       ))}
+
+      <div>
+        <label className="block text-[12px] font-medium text-[#512cad]">{fieldLabels.previousGroupParticipation}</label>
+        <div className="mt-1 space-x-4">
+          <label>
+            <input
+              type="radio"
+              name="previousGroupParticipation"
+              value="yes"
+              checked={formData.previousGroupParticipation === true}
+              onChange={() => handleYesNoChange('yes')}
+            />{' '}
+            Yes
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="previousGroupParticipation"
+              value="no"
+              checked={formData.previousGroupParticipation === false}
+              onChange={() => handleYesNoChange('no')}
+            />{' '}
+            No
+          </label>
+        </div>
+        {errors.previousGroupParticipation && <p className="text-red-500 text-xs">{errors.previousGroupParticipation}</p>}
+      </div>
+
+      {formData.previousGroupParticipation && (
+        <div>
+          <label className="block text-[12px] font-medium text-[#512cad]">{fieldLabels.previousGroupDetails}</label>
+          <textarea
+            value={formData.previousGroupDetails}
+            onChange={(e) => onChange('previousGroupDetails', e.target.value)}
+            className="mt-1 block w-full p-2 bg-gray-200 rounded-md text-[12px]"
+          />
+          {errors.previousGroupDetails && <p className="text-red-500 text-xs">{errors.previousGroupDetails}</p>}
+        </div>
+      )}
     </div>
   );
 };
 
-
-// Payment Information Section
 const PaymentInformation = () => (
-  <div className="my-3 space-y-2">
-    <p className="text-[12px] font-medium text-[#512cad]">
-      Monthly Support Group Fee: <span className="text-gray-700">$50</span>
-    </p>
-    <p className="text-[12px] font-medium text-[#512cad]">
-      Payment Method: <span className="text-gray-700">Secure payment link (provided after registration)</span>
-    </p>
+  <>
+   <div className='my-5'>
+        <label className="block text-[18px] text-center font-medium text-[#512cad]">Workshop Fee:</label>
+        <p className="mt-1 text-[50px] text-center text-[#c09a51] font-bold"> $50 </p>
   </div>
+
+      <div>
+        <label className="block text-[18px] text-center font-medium text-[#512cad]">Payment Method:</label>
+        <p className="block text-[16px] text-center font-medium text-[#c09a51]">
+          Secure payment link (provided upon registration)
+        </p>
+      </div>
+  </>
+   
 );
 
-
-
-// Confidentiality Agreement Section with Radio Buttons
-const ConfidentialityAgreement = ({ formData, errors, onChange }) => (
-  <div className="my-3 space-y-2">
-    <p className="text-sm">By submitting this form, you agree to maintain the confidentiality of the group and adhere to its guidelines.</p>
-
-    <div className="flex items-center space-x-3">
+const ConfidentialityAgreement = ({ formData, onChange }) => (
+  <div className="mt-5 space-y-2">
+    <p className="text-[#512cad] text-[12px]">
+      Confidentiality Agreement: All discussions in the support group will remain confidential and will not be shared outside the group.
+    </p>
+    <label className="flex items-center">
       <input
-        type="radio"
-        id="agree"
-        name="agreement"
-        value="yes"
-        onChange={onChange}
-        checked={formData.agreementSigned === true}
+        type="checkbox"
+        checked={formData.agreementSigned}
+        onChange={(e) => onChange('agreementSigned', e.target.checked)}
       />
-      <label htmlFor="agree" className="text-sm">I agree</label>
-
-      <input
-        type="radio"
-        id="disagree"
-        name="agreement"
-        value="no"
-        onChange={onChange}
-        checked={formData.agreementSigned === false}
-      />
-      <label htmlFor="disagree" className="text-sm">I disagree</label>
-    </div>
-    {errors.agreement && <p className="text-red-500 text-xs">{errors.agreement}</p>}
+      <span className="ml-2 text-[12px] text-[#512cad]">I agree to the confidentiality agreement.</span>
+    </label>
   </div>
 );
 
