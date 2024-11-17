@@ -39,11 +39,12 @@ const SupportGroupRegistrationForm = () => {
   ];
 
   const handleNextSection = () => {
-    if (validateCurrentSection()) {
+    
+
       setCompletedSections([...completedSections, activeSection]);
       if (activeSection < sections.length - 1) {
         setActiveSection(activeSection + 1);
-      }
+      
     }
   };
 
