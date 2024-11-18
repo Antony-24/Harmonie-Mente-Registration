@@ -24,7 +24,7 @@ const RegistrationForm = () => {
     goals: '',
     workshopLevel: '',
     paymentDate: '',
-    workshopDate:'01-03-2024',
+    workshopDate:'undefined',
     workshopTime:'undefined'
   });
 
@@ -80,7 +80,7 @@ const RegistrationForm = () => {
             title: 'Success!',
             text: 'Your form has been submitted.',
             icon: 'success',
-            confirmButtonText: 'Proceed Your Scedule'
+            confirmButtonText: 'Proceed Your Schedule'
           }).then(() => {
             window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=PXBlk-X5'; // Change '/thank-you' to your desired URL
           });

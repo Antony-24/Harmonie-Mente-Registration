@@ -13,7 +13,7 @@ const SupportGroupRegistrationForm = () => {
     street: '',
     city: '',
     state: '',
-    zip: '',
+    zip: 'undefined',
     country: '',
     childFirstName: '',
     childAge: '',
@@ -31,7 +31,7 @@ const SupportGroupRegistrationForm = () => {
   const [completedSections, setCompletedSections] = useState([]);
 
   const sections = [
-    { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'street', 'city', 'state', 'zip', 'country'] },
+    { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'street', 'city', 'state', 'country'] },
     { title: 'Child Information', component: ChildInformation, fields: ['hasChild', 'childName', 'childAge', 'childInfo'] },
     { title: 'Support Needs and Group Preferences', component: GroupPreferences, fields: ['groupChallenges', 'reasonsForJoining', 'goals', 'previousGroupParticipation', 'previousGroupDetails'] },
     { title: 'Payment Information', component: PaymentInformation, fields: [] },
@@ -91,7 +91,7 @@ const handleChange = (field, value) => {
           title: 'Success!',
           text: 'Your form has been submitted.',
           icon: 'success',
-          confirmButtonText: 'Great',
+          confirmButtonText: 'Proceed Your Schedule',
         }).then(() => {
           window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=dDw79KM7';
         });
@@ -179,7 +179,7 @@ const handleChange = (field, value) => {
 
 const PersonalInformation = ({ formData, errors, onChange }) => (
   <div className="space-y-2 grid grid-cols-1 lg:grid-cols-3 gap-2 mt-5">
-    {['fullName', 'email', 'phone', 'street', 'city', 'state', 'zip', 'country'].map((field) => (
+    {['fullName', 'email', 'phone', 'street', 'city', 'state', 'country'].map((field) => (
       <div key={field}>
         <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>
         <input
