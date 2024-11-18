@@ -338,7 +338,7 @@ const PaymentInformation = () => (
   <div className="space-y-2 mt-5">
     <div>
         <label className="block text-[18px] text-center font-medium text-[#512cad]">Workshop Fee:</label>
-        <p className="mt-1 text-[50px] text-center text-[#c09a51] font-bold"> $65 </p>
+        <p className="mt-1 text-[50px] text-center text-[#c09a51] font-bold"> $70 </p>
       </div>
       <div>
         <label className="block text-[18px] text-center font-medium text-[#512cad]">Payment Method:</label>
