@@ -14,13 +14,13 @@ const RegistrationForm = () => {
     street: '',
     city: '',
     state: '',
-    zip: '',
+    zip: 'undefined',
     country: '',
-    workshopTitle: 'Harmonie Mente', // Fixed title as per new data
-    location: '',
-    emergencyName: '',
-    emergencyRelationship: '',
-    emergencyPhone: '',
+    workshopTitle: 'undefined', // Fixed title as per new data
+    location: 'undefined',
+    emergencyName: 'undefined',
+    emergencyRelationship: 'undefined',
+    emergencyPhone: 'undefined',
     goals: '',
     workshopLevel: '',
     paymentDate: '',
@@ -32,9 +32,9 @@ const RegistrationForm = () => {
   const [completedSections, setCompletedSections] = useState([]);
 
   const sections = [
-    { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'zip', 'country'] },
-    { title: 'Workshop Details', component: WorkshopDetails, fields: ['workshopTitle', 'location'] },
-    { title: 'Emergency Contact Name', component: EmergencyContact, fields: ['emergencyName', 'emergencyRelationship', 'emergencyPhone'] }, // updated fields here
+    { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'country'] },
+    { title: 'Workshop Details', component: WorkshopDetails, fields: ['workshopTitle'] },
+    // { title: 'Emergency Contact Name', component: EmergencyContact, fields: ['emergencyRelationship', 'emergencyPhone'] }, // updated fields here
     { title: 'Workshop Preferences', component: WorkshopPreferences, fields: ['goals', 'previousWorkshops', 'workshopLevel'] },
     { title: 'Payment Information', component: PaymentInformation, fields: [''] },
     { title: 'Waiver and Consent', component: WaiverAndConsent, fields: ['waiverAgreement'] },
@@ -45,14 +45,23 @@ const RegistrationForm = () => {
   const isSectionCompleted = (index) => completedSections.includes(index);
 
   // Handle Next Section
+  // const handleNextSection = () => {
+  //   if (validateCurrentSection()) {
+  //     setCompletedSections([...completedSections, activeSection]);
+  //     if (activeSection < sections.length - 1) {
+  //       setActiveSection(activeSection + 1);
+  //     }
+  //   }
+  // };
   const handleNextSection = () => {
-    if (validateCurrentSection()) {
+    
       setCompletedSections([...completedSections, activeSection]);
       if (activeSection < sections.length - 1) {
         setActiveSection(activeSection + 1);
       }
-    }
+   
   };
+
 
   const handleSubmit = async () => {
     try{
@@ -71,7 +80,7 @@ const RegistrationForm = () => {
             title: 'Success!',
             text: 'Your form has been submitted.',
             icon: 'success',
-            confirmButtonText: 'Great'
+            confirmButtonText: 'Proceed Your Scedule'
           }).then(() => {
             window.location.href = 'https://book.carepatron.com/Harmonie-Mente-/All?p=jHVgIDhDTrOzfpa6dFuRjQ&i=PXBlk-X5'; // Change '/thank-you' to your desired URL
           });
@@ -194,7 +203,7 @@ const RegistrationForm = () => {
             <button
               className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
               onClick={handleSubmit}
-              disabled={!isFormComplete()}
+              
             >
               {`${loader ? "please wait..." : "submit"}`}
             </button>
@@ -209,7 +218,7 @@ const RegistrationForm = () => {
 // Personal Information Section
 const PersonalInformation = ({ formData, errors, onChange }) => (
   <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-end gap-1 md:gap-2 mt-5">
-    {['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'zip', 'country'].map((field) => (
+    {['fullName', 'dob', 'gender', 'phone', 'email', 'street', 'city', 'state', 'country'].map((field) => (
       <div key={field}>
         <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field}</label>
         <input
@@ -228,16 +237,32 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
 // Workshop Details Section
 const WorkshopDetails = ({ formData, errors, onChange }) => (
   <div className="space-y-4 flex flex-wrap gap-2 items-end">
-    <div>
-      <label className="block text-[12px] font-medium text-[#512cad]">Workshop Title</label>
-      <input
-        type="text"
-        value="Harmonie Mente"
-        readOnly
-        className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
-      />
-    </div>
-    <div>
+ <div>
+  <label className="block text-[12px] font-medium text-[#512cad]">
+    Workshop Title
+  </label>
+  <select
+    className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+  >
+    <option>Mindfulness and Stress Management Workshop</option>
+    <option>Healing from Childhood Trauma</option>
+    <option>Navigating Grief and Loss</option>
+    <option>Relationship and Communication Skills Workshop</option>
+    <option>Self-Compassion and Self-Acceptance</option>
+    <option>Coping with Anxiety: Tools for Everyday Life</option>
+    <option>Exploring Internal Family Systems (IFS)</option>
+    <option>Mind-Body Connection: Integrating Somatic Practices in Therapy</option>
+    <option>Resilience Building Workshop</option>
+    <option>Exploring the Shadow: Embracing the Unseen Parts of Ourselves</option>
+    <option>Addiction Recovery Workshop: Pathways to Healing</option>
+    <option>Integrating Spirituality in Therapy</option>
+    <option>Empowering Women: Building Confidence and Overcoming Limiting Beliefs</option>
+    <option>The Art of Letting Go: Acceptance and Commitment Therapy (ACT) Workshop</option>
+    <option>Men’s Mental Health: Breaking the Stigma</option>
+  </select>
+</div>
+
+    {/* <div>
       <label className="block text-[12px] font-medium text-[#512cad]">Location</label>
       <input
         type="text"
@@ -246,7 +271,7 @@ const WorkshopDetails = ({ formData, errors, onChange }) => (
         className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
       />
       {errors.location && <p className="text-red-500 text-xs">{errors.location}</p>}
-    </div>
+    </div> */}
   </div>
 );
 
@@ -254,14 +279,14 @@ const WorkshopDetails = ({ formData, errors, onChange }) => (
 const EmergencyContact = ({ formData, errors, onChange }) => {
     // Define a mapping for the user-friendly field names
     const fieldLabels = {
-      emergencyName: 'Emergency Contact Name',
+      // emergencyName: 'Emergency Contact Name',
       emergencyRelationship: 'Relationship to Participant',
       emergencyPhone: 'Phone Number',
     };
   
     return (
       <div className="space-y-2 w-full grid grid-cols-1 lg:grid-cols-3 items-start gap-1 md:gap-2 mt-5">
-        {['emergencyName', 'emergencyRelationship', 'emergencyPhone'].map((field) => (
+        {[ 'emergencyRelationship', 'emergencyPhone'].map((field) => (
           <div key={field}>
             {/* Use the mapping to display the user-friendly field name */}
             <label className="block text-[12px] font-medium text-[#512cad] capitalize">
@@ -345,7 +370,7 @@ const PaymentInformation = () => (
     <div className="space-y-2 w-full grid grid-cols-1 items-start gap-1 md:gap-2 mt-5">
       <div>
         <label className="block text-[18px] text-center font-medium text-[#512cad]">Workshop Fee:</label>
-        <p className="mt-1 text-[50px] text-center text-[#c09a51] font-bold"> $300 </p>
+        <p className="mt-1 text-[50px] text-center text-[#c09a51] font-bold"> $200 </p>
       </div>
       <div>
         <label className="block text-[18px] text-center font-medium text-[#512cad]">Payment Method:</label>

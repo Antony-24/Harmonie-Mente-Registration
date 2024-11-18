@@ -32,15 +32,13 @@ const SupportGroupRegistrationForm = () => {
 
   const sections = [
     { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'street', 'city', 'state', 'zip', 'country'] },
-    { title: 'Child’s Information', component: ChildInformation, fields: ['childFirstName', 'childAge', 'diagnosis', 'primaryCaregiver'] },
+    { title: 'Child Information', component: ChildInformation, fields: ['hasChild', 'childName', 'childAge', 'childInfo'] },
     { title: 'Support Needs and Group Preferences', component: GroupPreferences, fields: ['groupChallenges', 'reasonsForJoining', 'goals', 'previousGroupParticipation', 'previousGroupDetails'] },
     { title: 'Payment Information', component: PaymentInformation, fields: [] },
     { title: 'Confidentiality Agreement', component: ConfidentialityAgreement, fields: ['agreementSigned'] },
   ];
 
   const handleNextSection = () => {
-    
-
       setCompletedSections([...completedSections, activeSection]);
       if (activeSection < sections.length - 1) {
         setActiveSection(activeSection + 1);
@@ -112,7 +110,13 @@ const handleChange = (field, value) => {
 
   const renderSection = () => {
     const SectionComponent = sections[activeSection].component;
-    return <SectionComponent formData={formData} errors={errors} onChange={handleChange} />;
+    return <SectionComponent
+     formData={formData}
+      errors={errors}
+       onChange={handleChange}
+       handleNextSection={handleNextSection} // Pass handleNextSection as a prop
+       setFormData={setFormData}
+        />;
   };
 
   const renderNavigation = () => (
@@ -190,22 +194,92 @@ const PersonalInformation = ({ formData, errors, onChange }) => (
   </div>
 );
 
-const ChildInformation = ({ formData, errors, onChange }) => (
-  <div className="space-y-2 grid grid-cols-1 lg:grid-cols-3 gap-2 mt-5">
-    {['childFirstName', 'childAge', 'diagnosis', 'primaryCaregiver'].map((field) => (
-      <div key={field}>
-        <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>
-        <input
-          type={field === 'childAge' ? 'number' : 'text'}
-          value={formData[field]}
-          onChange={(e) => onChange(field, e.target.value)}
-          className="mt-1 block w-full p-1 bg-gray-200 rounded-md text-[12px]"
-        />
-        {errors[field] && <p className="text-red-500 text-xs">{errors[field]}</p>}
+// Child Information Section
+const ChildInformation = ({ formData, errors, onChange, handleNextSection,setFormData }) => {
+
+ 
+
+  const handleChildQuestion = (hasChild) => {
+    if (!hasChild) {
+        // Reset child-related values to undefined
+    setFormData((prev) => ({
+      ...prev,
+      childFirstName: "undefined",
+      childAge: "undefined",
+      diagnosis: "undefined",
+      primaryCaregiver:"undefined"
+    }));
+      handleNextSection() // Navigate to the next section if no child
+    } else {
+      onChange('hasChild', true); // Set the hasChild value in formData
+    }
+  };
+
+  return (
+    <div className="space-y-6 mt-6">
+      {/* Question: Do you have a child? */}
+      <div className="text-center">
+        <p className="text-[16px] font-medium text-[#512cad]">
+          Do you have a child?
+        </p>
+        <div className="mt-2 flex justify-center gap-4">
+          <button
+            className="px-4 py-2 bg-[#512cad] text-white rounded-md"
+            onClick={() => handleChildQuestion(false)}
+          >
+            No
+          </button>
+          <button
+            className="px-4 py-2 bg-[#c09a51] text-white rounded-md"
+            onClick={() => handleChildQuestion(true)}
+          >
+            Yes
+          </button>
+        </div>
       </div>
-    ))}
-  </div>
-);
+
+      {/* Conditionally Render Child Information Fields */}
+      {formData.hasChild && (
+        <div className="space-y-4">
+          <div>
+            <label className="block text-[12px] font-medium text-[#512cad]">
+              Child's Name
+            </label>
+            <input
+              type="text"
+              value={formData.childName || ''}
+              onChange={(e) => onChange('childName', e.target.value)}
+              className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+            />
+            {errors.childName && <p className="text-red-500 text-xs">{errors.childName}</p>}
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-[#512cad]">
+              Child's Age
+            </label>
+            <input
+              type="number"
+              value={formData.childAge || ''}
+              onChange={(e) => onChange('childAge', e.target.value)}
+              className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+            />
+            {errors.childAge && <p className="text-red-500 text-xs">{errors.childAge}</p>}
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-[#512cad]">
+              Additional Information (Optional)
+            </label>
+            <textarea
+              value={formData.childInfo || ''}
+              onChange={(e) => onChange('childInfo', e.target.value)}
+              className="mt-1 block w-full p-1 bg-gray-200 focus:outline-none rounded-md text-[12px]"
+            ></textarea>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const GroupPreferences = ({ formData, errors, onChange }) => {
   const fieldLabels = {
