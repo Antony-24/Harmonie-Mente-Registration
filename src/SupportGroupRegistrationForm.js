@@ -145,7 +145,7 @@ const handleChange = (field, value) => {
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
       <p className="text-lg text-center text-[#512CAD] font-normal my-4">
-        Thank you for your interest in joining our monthly support group. This group aims to provide a compassionate space for emotional support, shared experiences, and valuable resources for mothers raising children with special needs. Please complete the form below to register. We look forward to having you join our community.
+      Thank you for your interest in joining our weekly support group for women from all walks of life. This group provides a compassionate and safe space for emotional support, shared experiences, and access to valuable resources. We welcome women from diverse backgrounds, including mothers raising children with special needs. Each session is led by experienced mental health professionals and thought leaders, ensuring a supportive and enriching experience for all participants.
       </p>
 
       {renderNavigation()}
