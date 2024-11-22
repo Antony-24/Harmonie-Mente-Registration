@@ -29,8 +29,8 @@ function Footer() {
             <ul className="space-y-1">
               <li><a href="https://harmoniemente.com" className="hover:text-gray-300 text-[12px]">Home</a></li>
               <li><a href="https://harmoniemente.com/about-us/" className="hover:text-gray-300 text-[12px]">About Us</a></li>
-              <li><a href="https://harmoniemente.com/services/" className="hover:text-gray-300 text-[12px]">Services</a></li>
-              <li><a href="https://harmoniemente.com/contact-us/" className="hover:text-gray-300 text-[12px]">Contact</a></li>
+              <li><a href="https://harmoniemente.com/team/" className="hover:text-gray-300 text-[12px]">Our Team</a></li>
+              <li><a href="https://harmoniemente.com/contact" className="hover:text-gray-300 text-[12px]">Contact</a></li>
             </ul>
           </div>
 

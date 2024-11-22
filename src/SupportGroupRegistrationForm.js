@@ -154,12 +154,12 @@ const handleChange = (field, value) => {
         {renderSection()}
         <div className="flex justify-between mt-3">
           {activeSection > 0 && (
-            <button className="px-4 py-2 bg-[#512cad] text-white rounded-md" onClick={handlePreviousSection}>
+            <button className="px-4 py-2 bg-[#FAF9F6] text-white rounded-md" onClick={handlePreviousSection}>
               Previous
             </button>
           )}
           {activeSection < sections.length - 1 ? (
-            <button className="px-4 py-2 bg-[#c09a51] text-white rounded-md" onClick={handleNextSection}>
+            <button className="px-4 py-2 bg-[#FAF9F6] text-white rounded-md" onClick={handleNextSection}>
               Next
             </button>
           ) : (

@@ -156,8 +156,8 @@ const WorkingProfessionalsSupportGroupForm = () => {
 
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
-      <p className="text-lg text-center text-[#512CAD] font-normal my-4">
-      This program provides a safe, confidential, and supportive space for professional men to share experiences, navigate personal and work-related challenges, and foster meaningful connections with peers.
+      <p className="text-sm text-center text-[#512CAD] font-normal my-4">
+      This program offers a safe, confidential, and supportive space for professional men to share their experiences and collaborate with leading experts in conflict management, psychology, and related disciplines. Participants will work together to navigate personal and work-related challenges, discovering evidence-based solutions within a structured, time-bound framework.
       </p>
 
       {renderNavigation()}

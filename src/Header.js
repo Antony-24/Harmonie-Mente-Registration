@@ -14,10 +14,11 @@ function Header() {
           <img
             src={logo}
             alt="logo"
-            className="w-12 cursor-pointer"
+            className="w-12 hover:animate-pulse cursor-pointer"
             onClick={handleLogoClick} // Calling handleLogoClick on logo click
           />
-          <h1 className="text-[20px] my-3 text-xl md:text-2xl tracking-wide text-center text-white font-semibold">
+          <h1 onClick={handleLogoClick} // Calling handleLogoClick on logo click 
+          className="text-[20px] cursor-pointer hover:transition-all hover:translate-y-1 hover:animate-pulse my-3 text-xl md:text-2xl tracking-wide text-center text-white font-semibold">
             Harmonie-Mente
           </h1>
         </div>
