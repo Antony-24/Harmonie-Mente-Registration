@@ -15,7 +15,7 @@ function MensBanner() {
       
       <div className='bg-black/30 backdrop-blur-sm w-full py-4'>
       <p className='text-sm'>Welcome to</p>
-      <p className='text-xl'>Mente- Soin  Working Professionals Men's Men's Collaborative Growth Workshop</p>
+      <p className='text-xl'>Mente- Soin  Working Professionals Men's Collaborative Growth Workshop</p>
       {/* <p className='text-sm tracking-wide'>Start Date: January 11, 2024, at 10 AM EST (Alternate Saturdays)</p> */}
       </div>
         </div>
