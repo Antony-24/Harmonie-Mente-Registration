@@ -19,7 +19,7 @@ function Header() {
           />
           <h1 onClick={handleLogoClick} // Calling handleLogoClick on logo click 
           className="text-[20px] cursor-pointer hover:transition-all hover:translate-y-1 hover:animate-pulse my-3 text-xl md:text-2xl tracking-wide text-center text-white font-semibold">
-            Harmonie-Mente
+            Mente-Soin
           </h1>
         </div>
       </div>
