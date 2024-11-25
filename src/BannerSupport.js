@@ -12,7 +12,7 @@ function BannerSupport() {
       {/* Text */}
       <div className="flex items-center justify-center w-full h-full">
       <div className="text-[22px] z-20 text-xl md:text-3xl tracking-wide text-center text-[#ffffff] font-semibold">
-      <p>Harmonie Mente Monthly Online Support Group Registration Form</p>
+      <p>Mente-Soin Weekly women's sanctuary</p>
      
         </div>
    

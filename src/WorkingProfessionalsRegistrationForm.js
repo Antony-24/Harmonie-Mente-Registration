@@ -12,7 +12,7 @@ const WorkingProfessionalsSupportGroupForm = () => {
     phone: '',
     preferredContactMethod: '',
     preferredPronouns: '',
-    country: 'undefined',
+    country: '',
     currentOccupation: '',
     industry: '',
     topicsOfInterest: [], // Initialize as an empty array
@@ -30,7 +30,7 @@ const WorkingProfessionalsSupportGroupForm = () => {
   const [completedSections, setCompletedSections] = useState([]);
 
   const sections = [
-    { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'preferredContactMethod', 'preferredPronouns'] },
+    { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'street', 'city', 'state', 'country'] },
     // { title: 'Location', component: Location, fields: ['country'] },
     { title: 'Professional Background', component: ProfessionalBackground, fields: ['currentOccupation', 'industry'] },
     { title: 'Group Interest & Participation', component: GroupInterest, fields: ['topicsOfInterest', 'previousGroupParticipation', 'mainReasonsForJoining', 'sourceOfReferral'] },
@@ -192,7 +192,7 @@ const WorkingProfessionalsSupportGroupForm = () => {
 // Personal Information Section
 const PersonalInformation = ({ formData, errors, onChange }) => (
   <div className="space-y-2 grid grid-cols-1 lg:grid-cols-3 gap-2 mt-5">
-    {['fullName', 'email', 'phone', 'preferredContactMethod', 'preferredPronouns'].map((field) => (
+    {['fullName', 'email', 'phone', 'street', 'city', 'state', 'country'].map((field) => (
       <div key={field}>
         <label className="block text-[12px] font-medium text-[#512cad] capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</label>
         <input

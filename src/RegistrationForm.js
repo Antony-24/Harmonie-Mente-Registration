@@ -172,7 +172,7 @@ const RegistrationForm = () => {
   };
   return (
     <div className="max-w-[95%] md:max-w-[80%] mx-auto p-6 bg-white rounded-lg">
-      <p className='text-lg text-center text-[#512CAD] font-normal my-4'>Thank you for your interest in joining the Harmonie Mente Workshop! Please complete the form below to finalize your registration. We look forward to welcoming you.</p>
+      <p className='text-lg text-center text-[#512CAD] font-normal my-4'>Thank you for your interest in joining the Mente Soin Workshop! Please complete the form below to finalize your registration. We look forward to welcoming you.</p>
 
       {renderNavigation()}
 
@@ -320,7 +320,7 @@ const WorkshopPreferences = ({ formData, errors, onChange }) => (
       </div>
   
       <div>
-        <label className="block text-[12px] font-medium text-[#512cad]">Have you attended any previous Harmonie Mente workshops?</label>
+        <label className="block text-[12px] font-medium text-[#512cad]">Have you attended any previous Mente Soin workshops?</label>
         <div className="mt-1 flex items-center gap-2">
           <label className="text-[12px] text-gray-700">
             <input

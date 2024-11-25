@@ -17,7 +17,7 @@ function Footer() {
           </div>
           
           <p className="text-[12px] font-thin text-white max-w-80 text-justify">
-          At Harmonie-Mente, we understand the challenges faced by you in today’s fast-paced world. Our mission is to provide accessible, personalized, and evidence-based mental health solutions that empower you to reach your full potential while maintaining optimal psychological well-being.
+          At Mente Soin, we understand the challenges faced by you in today’s fast-paced world. Our mission is to provide accessible, personalized, and evidence-based mental health solutions that empower you to reach your full potential while maintaining optimal psychological well-being.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ function Footer() {
         </div>
       </div>
       <div className="mt-6 border-t border-white pt-4 text-center text-sm">
-        © 2024 Harmonie-mente. All rights reserved.
+        © 2024 Mente Soin. All rights reserved.
       </div>
     </footer>
   );
