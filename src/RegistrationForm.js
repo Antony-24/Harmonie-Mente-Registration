@@ -209,7 +209,7 @@ const RegistrationForm = () => {
             </button>
           )}
         </div>
-        <p className='text-[16px] text-left text-[#512CAD] my-3'>Please submit your completed registration  If you have any questions, feel free to contact us at info@harmoniemente.com</p>
+        {/* <p className='text-[16px] text-left text-[#512CAD] my-3'>Please submit your completed registration  If you have any questions, feel free to contact us at info@harmoniemente.com</p> */}
       </div>
     </div>
   );
