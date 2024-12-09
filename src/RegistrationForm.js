@@ -24,7 +24,6 @@ const RegistrationForm = () => {
     goals: '',
     workshopLevel: '',
     paymentDate: '',
-    workshopDate:'undefined',
     workshopTime:'undefined'
   });
 

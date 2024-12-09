@@ -32,7 +32,7 @@ const SupportGroupRegistrationForm = () => {
 
   const sections = [
     { title: 'Personal Information', component: PersonalInformation, fields: ['fullName', 'email', 'phone', 'street', 'city', 'state', 'country'] },
-    { title: 'Child Information', component: ChildInformation, fields: ['hasChild', 'childName', 'childAge', 'childInfo'] },
+    { title: 'Child Information', component: ChildInformation, fields: ['hasChild', 'childFirstName', 'childAge', 'childInfo'] },
     { title: 'Support Needs and Group Preferences', component: GroupPreferences, fields: ['groupChallenges', 'reasonsForJoining', 'goals', 'previousGroupParticipation', 'previousGroupDetails'] },
     { title: 'Payment Information', component: PaymentInformation, fields: [] },
     { title: 'Confidentiality Agreement', component: ConfidentialityAgreement, fields: ['agreementSigned'] },
@@ -154,12 +154,12 @@ const handleChange = (field, value) => {
         {renderSection()}
         <div className="flex justify-between mt-3">
           {activeSection > 0 && (
-            <button className="px-4 py-2 bg-[#FAF9F6] text-white rounded-md" onClick={handlePreviousSection}>
+            <button className="px-4 py-2 bg-[#c09a51] text-white rounded-md" onClick={handlePreviousSection}>
               Previous
             </button>
           )}
           {activeSection < sections.length - 1 ? (
-            <button className="px-4 py-2 bg-[#FAF9F6] text-white rounded-md" onClick={handleNextSection}>
+            <button className="px-4 py-2 bg-[#c09a51] text-white rounded-md" onClick={handleNextSection}>
               Next
             </button>
           ) : (
@@ -201,19 +201,24 @@ const ChildInformation = ({ formData, errors, onChange, handleNextSection,setFor
 
   const handleChildQuestion = (hasChild) => {
     if (!hasChild) {
-        // Reset child-related values to undefined
-    setFormData((prev) => ({
-      ...prev,
-      childFirstName: "undefined",
-      childAge: "undefined",
-      diagnosis: "undefined",
-      primaryCaregiver:"undefined"
-    }));
-      handleNextSection() // Navigate to the next section if no child
+      // Reset child-related values only if the user selects "No"
+      setFormData((prev) => ({
+        ...prev,
+        hasChild: false,
+        childFirstName: '',
+        childAge: '',
+        diagnosis: '',
+        primaryCaregiver: '',
+      }));
+      handleNextSection(); // Navigate to the next section if no child
     } else {
-      onChange('hasChild', true); // Set the hasChild value in formData
+      setFormData((prev) => ({
+        ...prev,
+        hasChild: true, // Set hasChild to true
+      }));
     }
   };
+  
 
   return (
     <div className="space-y-6 mt-6">
